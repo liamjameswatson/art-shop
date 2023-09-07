@@ -1,21 +1,22 @@
-import { Navbar, Nav, Container } from "react-bootstrap";
-import "./App.css";
-import Header from "./ui/Header";
-import Footer from "./ui/Footer";
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
+import AppLayout from "./ui/AppLayout";
 import HomePage from "./pages/HomePage";
 
+const router = createBrowserRouter([
+  {
+    element: <AppLayout />,
+
+    children: [
+      {
+        path: "/",
+        element: <HomePage />,
+      },
+    ],
+  },
+]);
+
 function App() {
-  return (
-    <>
-      <Header />
-      <main className="py-3">
-        <Container>
-          <HomePage />
-        </Container>
-        <Footer />
-      </main>
-    </>
-  );
+  return <RouterProvider router={router} />;
 }
 
 export default App;
