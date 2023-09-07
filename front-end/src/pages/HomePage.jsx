@@ -9,7 +9,6 @@ const HomePage = () => {
       <Row>
         {products.map((product, index) => (
           <Col key={index} sm={12} md={6} lg={4} xl={3}>
-            {/* <h3>{product.name}</h3> */}
             <Product product={product}/>
             {console.log(product.name)}
           </Col>
