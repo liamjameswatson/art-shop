@@ -2,6 +2,7 @@ import { Navbar, Nav, Container } from "react-bootstrap";
 import "./App.css";
 import Header from "./ui/Header";
 import Footer from "./ui/Footer";
+import HomePage from "./pages/HomePage";
 
 function App() {
   return (
@@ -9,7 +10,7 @@ function App() {
       <Header />
       <main className="py-3">
         <Container>
-          <h1>Hello</h1>
+          <HomePage />
         </Container>
         <Footer />
       </main>
