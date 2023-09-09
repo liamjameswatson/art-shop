@@ -1,11 +1,14 @@
 import express from "express";
 import dotenv from "dotenv";
-dotenv.config()
+dotenv.config();
 import { products } from "./data/placeholderData.js";
 
-const port = process.env.PORT || 5000;
+import cors from "cors";
+
+const port = process.env.PORT || 8000;
 
 const app = express();
+app.use(cors());
 
 // Get initial route
 app.get("/", (req, res) => {
@@ -15,6 +18,7 @@ app.get("/", (req, res) => {
 // GET all products
 app.get("/api/products", (req, res) => {
   res.json(products);
+  console.log(products);
 });
 
 // GET Single products
