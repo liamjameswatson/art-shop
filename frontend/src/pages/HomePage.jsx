@@ -1,5 +1,5 @@
 import { Row, Col } from "react-bootstrap";
-import { products } from "../../public/PlaeholderData";
+import { products } from "../../public/placeholderData";
 import Product from "../ui/Product";
 
 const HomePage = () => {
