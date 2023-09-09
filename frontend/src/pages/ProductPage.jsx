@@ -1,5 +1,5 @@
 import { useParams } from "react-router-dom";
-import { products } from "../../public/PlaeholderData";
+import { products } from "../../public/placeholderData";
 import { Link } from "react-router-dom";
 import {
   Row,
