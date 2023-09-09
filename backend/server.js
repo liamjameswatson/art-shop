@@ -6,7 +6,14 @@ const port = 5000;
 const app = express();
 
 
+app.get("/", (req, res) => {
+  res.send("API is running...");
+});
 
+// GET all products
+app.get("/api/products", (req, res) => {
+  res.json(products);
+});
 
 
 
