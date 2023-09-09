@@ -7,9 +7,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "node backend/server.js",
-    "server": "nodemon backend/server.js", 
-    "client": "npm run dev --prefix frontend", 
-    "dev": "concurrently \"npm run server\" \"npm run client\"" 
+    "server": "nodemon backend/server.js",
+    "client": "npm run dev --prefix frontend",
+    "dev": "concurrently \"npm run server\" \"npm run client\""
   },
   "author": "Liam Watson",
   "license": "MIT",
@@ -18,6 +18,7 @@
   },
   "devDependencies": {
     "concurrently": "^8.2.1",
+    "dotenv": "^16.3.1",
     "nodemon": "^3.0.1"
   }
 }
