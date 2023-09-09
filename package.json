@@ -1,0 +1,16 @@
+{
+  "name": "art-shop",
+  "version": "1.0.0",
+  "description": "Ecommerce website for seliing art and craft",
+  "type": "module",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node backend/server.js"
+  },
+  "author": "Liam Watson",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2"
+  }
+}
