@@ -3,9 +3,13 @@ import dotenv from "dotenv";
 dotenv.config();
 import { products } from "./data/placeholderData.js";
 
+import connectDB from "./config/db.js";
+
 import cors from "cors";
 
 const port = process.env.PORT || 8000;
+
+connectDB(); // connect to database
 
 const app = express();
 app.use(cors());
