@@ -12,6 +12,8 @@ import {
   Button,
   ListGroupItem,
 } from "react-bootstrap";
+import Spinner from "../ui/Spinner";
+import Message from "../ui/Message";
 
 const ProductPage = () => {
   const { id: productId } = useParams();
@@ -28,9 +30,11 @@ const ProductPage = () => {
       </Link>
 
       {isLoading ? (
-        <h2>Loading...</h2>
+        <Spinner />
       ) : error ? (
-        <div>{error?.data?.message || error.error}</div>
+        <Message variant="danger">
+          {error?.data?.message || error.error}
+        </Message>
       ) : (
         <>
           <Row>
