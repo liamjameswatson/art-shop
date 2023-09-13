@@ -2,15 +2,20 @@ import Product from "../ui/Product";
 import { Row, Col } from "react-bootstrap";
 import { useGetProductsQuery } from "../slices/productsApiSlice";
 
+import Spinner from "../ui/Spinner";
+import Message from "../ui/Message";
+
 const HomePage = () => {
   const { data: products, isLoading, error } = useGetProductsQuery();
 
   return (
     <>
       {isLoading ? (
-        <h2>Loading...</h2>
+        <Spinner />
       ) : error ? (
-        <div>{error?.data?.message || error.error}</div>
+        <Message variant="danger">
+          {error?.data?.message || error.error}
+        </Message>
       ) : (
         <>
           <h1>Products</h1>
