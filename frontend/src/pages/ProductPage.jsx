@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useParams } from "react-router-dom";
 
 import { useGetProductDetailsQuery } from "../slices/productsApiSlice";
@@ -11,12 +12,17 @@ import {
   Card,
   Button,
   ListGroupItem,
+  Form,
 } from "react-bootstrap";
 import Spinner from "../ui/Spinner";
 import Message from "../ui/Message";
 
 const ProductPage = () => {
+  // get id from params
   const { id: productId } = useParams();
+
+  const [quantity, setQuantity] = useState(1);
+
   const {
     data: product,
     isLoading,
@@ -55,15 +61,15 @@ const ProductPage = () => {
             <Col md={3}>
               <Card>
                 <ListGroup variant="flush">
-                  <ListGroupItem>
+                  <ListGroup.Item>
                     <Row>
                       <Col>Price:</Col>
                       <Col>
                         <strong>£{product.price}</strong>:
                       </Col>
                     </Row>
-                  </ListGroupItem>
-                  <ListGroupItem>
+                  </ListGroup.Item>
+                  <ListGroup.Item>
                     <Row>
                       <Col>Status:</Col>
                       <Col>
@@ -73,9 +79,40 @@ const ProductPage = () => {
                         :
                       </Col>
                     </Row>
-                  </ListGroupItem>
+                  </ListGroup.Item>
 
-                  <ListGroupItem>
+                  {/* show quantity if product is in stock */}
+                  {product.stockNumber > 0 && (
+                    <ListGroup.Item>
+                      <Row>
+                        <Col>Quantity</Col>
+                        <Col>
+                          <Form.Control
+                            as="select"
+                            value={quantity}
+                            onChange={(e) =>
+                              setQuantity(Number(e.target.value))
+                            }
+                          >
+                            {/* Only allow stock number to be selected */}
+                            {[...Array(product.stockNumber).keys()].map(
+                              (stockCount) => (
+                                <option
+                                  key={stockCount + 1}
+                                  value={stockCount + 1}
+                                >
+                                  {stockCount + 1}
+                                </option>
+                              )
+                            )}
+                            {/* {console.log([...Array(product.stockNumber).keys()])} */}
+                          </Form.Control>
+                        </Col>
+                      </Row>
+                    </ListGroup.Item>
+                  )}
+
+                  <ListGroup.Item>
                     <Button
                       className="btn-primary"
                       type="button"
@@ -83,7 +120,7 @@ const ProductPage = () => {
                     >
                       Add to basket
                     </Button>
-                  </ListGroupItem>
+                  </ListGroup.Item>
                 </ListGroup>
               </Card>
             </Col>
