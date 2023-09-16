@@ -1,5 +1,6 @@
 import { PRODUCTS_URL } from "../constants";
 import { apiSlice } from "./apiSlice";
+// apiSlice is for async requests that create endpoints
 
 export const productsApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
