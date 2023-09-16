@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 
 import { useGetProductDetailsQuery } from "../slices/productsApiSlice";
 
@@ -11,24 +11,37 @@ import {
   ListGroup,
   Card,
   Button,
-  ListGroupItem,
   Form,
 } from "react-bootstrap";
+
+import { useDispatch } from "react-redux";
+
 import Spinner from "../ui/Spinner";
 import Message from "../ui/Message";
+
+import { addToCart } from "../slices/cartSlice";
 
 const ProductPage = () => {
   // get id from params
   const { id: productId } = useParams();
 
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+
   const [quantity, setQuantity] = useState(1);
 
+  
   const {
     data: product,
     isLoading,
     error,
   } = useGetProductDetailsQuery(productId);
-
+  
+  const handleAddToCart = () => {
+    // send product and quantity to cart
+    dispatch(addToCart({...product, quantity}))
+    navigate('/cart')
+  };
   return (
     <>
       <Link className="btn btn-light my-3" to="/">
@@ -117,6 +130,7 @@ const ProductPage = () => {
                       className="btn-primary"
                       type="button"
                       disabled={product.stockNumber === 0}
+                      onClick={handleAddToCart}
                     >
                       Add to basket
                     </Button>

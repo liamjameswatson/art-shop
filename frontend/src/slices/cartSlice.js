@@ -14,7 +14,7 @@ const cartSlice = createSlice({
   name: "cart",
   initialState,
   reducers: {
-    addT0Cart: (state, action) => {
+    addToCart: (state, action) => {
       const item = action.payload;
 
       //check if the item already exists in the cart, if x matches payload id, save to existingItem
