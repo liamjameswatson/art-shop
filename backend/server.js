@@ -15,6 +15,10 @@ connectDB(); // connect to database
 const app = express();
 app.use(cors());
 
+//Body parser middleware
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
 // Get initial route
 app.get("/", (req, res) => {
   res.send("API is running...");

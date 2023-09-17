@@ -6,6 +6,7 @@ import User from "../models/userModel.js";
 // @access Public
 
 const authUser = asyncHandler(async (req, res) => {
+  console.log(req.body);
   res.send("auth user");
 });
 
