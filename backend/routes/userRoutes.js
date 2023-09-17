@@ -12,10 +12,12 @@ import {
   deleteUser,
 } from "../controllers/userController.js";
 
+import { protect, protectAdmin } from "../middleware/authMiddleware.js";
+
 const router = express.Router();
 
 // GET all users, register user
-router.route("/").get(getUsers).post(registerUser);
+router.route("/").get(protect, protectAdmin, getUsers).post(registerUser);
 
 // login user
 router.post("/login", authUser);
@@ -24,9 +26,16 @@ router.post("/login", authUser);
 router.post("/logout", logoutUser);
 
 // get and update user profile (user route)
-router.route("/profile").get(getUserProfile).put(updateUserProfile);
+router
+  .route("/profile")
+  .get(protect, getUserProfile)
+  .put(protect, updateUserProfile);
 
 // get, update and delete user  (admin route)
-router.route("/:id").get(getUserById).put(updateUser).delete(deleteUser);
+router
+  .route("/:id")
+  .get(protect, protectAdmin, getUserById)
+  .put(protect, protectAdmin, updateUser)
+  .delete(protect, protectAdmin, deleteUser);
 
 export default router;
