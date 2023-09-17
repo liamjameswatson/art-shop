@@ -1,6 +1,6 @@
 import asyncHandler from "../middleware/asyncHandler.js";
 import User from "../models/userModel.js";
-import jwt from "jsonwebtoken";
+import generateToken from "../utils/generateToken.js";
 
 // @desc Login, Authenticate user & get token
 // @route POST /api/users/login
@@ -14,20 +14,9 @@ const authUser = asyncHandler(async (req, res) => {
 
   // Check if user exists and password is correct          matchPassword is a method on the User model
   if (user && (await user.matchPassword(password))) {
-    // create JWT
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, {
-      expiresIn: "30d",
-    });
+    generateToken(res, user._id);
 
-    // Set JWT as HTTP-Only cookie
-    res.cookie("jwt", token, {
-      httpOnly: true,
-      secure: process.env.NODE_ENV !== "development", // https only - set true if in production
-      sameSite: "strict",
-      maxAge: 30 * 24 * 60 * 60 * 1000, //30 days
-    });
-
-    res.json({
+    res.status(200).json({
       _id: user._id,
       name: user.name,
       email: user.email,
@@ -65,11 +54,14 @@ const registerUser = asyncHandler(async (req, res) => {
   });
 
   if (user) {
-    // if user send this back
+    // if user generate a token and send info back to client
+    generateToken(res, user._id);
+
     res.status(201).json({
       _id: user.id,
       name: user.name,
       email: user.email,
+      role: user.role,
     });
   } else {
     res.status(400);
@@ -95,7 +87,19 @@ const logoutUser = asyncHandler(async (req, res) => {
 // @access Private
 
 const getUserProfile = asyncHandler(async (req, res) => {
-  res.send("get user profile");
+  const user = await User.findById(req.user._id); //req.user._id comes from being logged in
+
+  if (user) {
+    res.status(200).json({
+      _id: user._id,
+      name: user.name,
+      email: user.email,
+      role: user.role,
+    });
+  } else {
+    res.staus(404);
+    throw new Error("User not found");
+  }
 });
 
 // @desc Update user profile
@@ -103,7 +107,29 @@ const getUserProfile = asyncHandler(async (req, res) => {
 // @access Private
 
 const updateUserProfile = asyncHandler(async (req, res) => {
-  res.send("update user profile");
+  const user = await User.findById(req.user._id); //req.user._id comes from being logged in
+
+  if (user) {
+    // update a field or keep whatever is in the database
+    user.name = req.body.name || user.name;
+    user.email = req.body.email || user.email;
+
+    if (req.body.password) {
+      user.password = req.body.password;
+    }
+
+    const updatedUser = await user.save();
+
+    res.status(200).json({
+      _id: updatedUser._id,
+      name: updatedUser.name,
+      email: updatedUser.email,
+      role: updatedUser.role,
+    });
+  } else {
+    res.status(404);
+    throw new Error("User not found");
+  }
 });
 
 // @desc Get all users
