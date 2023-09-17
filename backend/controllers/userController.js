@@ -10,7 +10,9 @@ const authUser = asyncHandler(async (req, res) => {
 
   // Check for user
   const user = await User.findOne({ email });
-  if (user) {
+
+  // Check if user exists and password is correct          matchPassword is a method on the User model
+  if (user && (await user.matchPassword(password))) {
     res.json({
       _id: user._id,
       name: user.name,
