@@ -28,6 +28,10 @@ const CartPage = () => {
     dispatch(removeFromCart(id));
   };
 
+  const handleCheckout = () => {
+    navigate("/login?redirect=/shipping"); // check if logged in
+  };
+
   return (
     <Row>
       <Col md={8}>
@@ -102,6 +106,7 @@ const CartPage = () => {
                 type="button"
                 className="btn-block"
                 disabled={cartItems.length === 0}
+                onClick={handleCheckout}
               >
                 {" "}
                 Proceed To Checkout
