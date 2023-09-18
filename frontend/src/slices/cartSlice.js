@@ -4,7 +4,7 @@ import { updateCart } from "../utils/cartUtils";
 // get from local storage or create an object with empty array
 const initialState = localStorage.getItem("cart")
   ? JSON.parse(localStorage.getItem("cart"))
-  : { cartItems: [] };
+  : { cartItems: [], deliveryAdrress: {}, paymentMethod: "PayPal" };
 
 const cartSlice = createSlice({
   name: "cart",
@@ -23,9 +23,14 @@ const cartSlice = createSlice({
       } else {
         state.cartItems = [...state.cartItems, item];
       }
-
       return updateCart(state);
     },
+
+    saveDeliveryAddress: (state, action) => {
+      state.deliveryAddress = action.payload;
+      return updateCart(state);
+    },
+
     // return cartItems that don't match the payload id
     removeFromCart: (state, action) => {
       state.cartItems = state.cartItems.filter(
@@ -36,6 +41,7 @@ const cartSlice = createSlice({
   },
 });
 
-export const { addToCart, removeFromCart } = cartSlice.actions;
+export const { addToCart, removeFromCart, saveDeliveryAddress } =
+  cartSlice.actions;
 
 export default cartSlice.reducer;
