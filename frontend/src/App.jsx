@@ -6,6 +6,7 @@ import CartPage from "./pages/CartPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import DeliveryAddressPage from "./pages/DeliveryAddressPage";
+import ProtectedRoute from "./ui/ProtectedRoute";
 
 const router = createBrowserRouter([
   {
@@ -33,8 +34,14 @@ const router = createBrowserRouter([
         element: <RegisterPage />,
       },
       {
-        path: "/checkout",
-        element: <DeliveryAddressPage />,
+        path: "",
+        element: <ProtectedRoute />,
+        children: [
+          {
+            path: "checkout",
+            element: <DeliveryAddressPage />,
+          },
+        ],
       },
     ],
   },
