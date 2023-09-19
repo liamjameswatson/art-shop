@@ -3,6 +3,7 @@ export const addDecimals = (num) => {
   return (Math.round(num * 100) / 100).toFixed(2);
 };
 
+// called everytime the cart state is updated, the new price is calculated and saved to local storage
 export const updateCart = (state) => {
   // Calculate item price
   state.itemsPrice = addDecimals(
@@ -22,7 +23,7 @@ export const updateCart = (state) => {
     Number(state.deliveryPrice)
   ).toFixed(2);
 
-  // save state to local storage
+  // save state to local storage, under cart
   localStorage.setItem("cart", JSON.stringify(state));
 
   return state;

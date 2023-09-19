@@ -7,6 +7,7 @@ import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import DeliveryAddressPage from "./pages/DeliveryAddressPage";
 import ProtectedRoute from "./ui/ProtectedRoute";
+import PaymentPage from "./pages/PaymentPage";
 
 const router = createBrowserRouter([
   {
@@ -40,6 +41,10 @@ const router = createBrowserRouter([
           {
             path: "checkout",
             element: <DeliveryAddressPage />,
+          },
+          {
+            path: "payment",
+            element: <PaymentPage />,
           },
         ],
       },
