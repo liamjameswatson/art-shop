@@ -3,7 +3,7 @@ import { Form, Button } from "react-bootstrap";
 import FormContainer from "../ui/FormContainer";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { saveDeliveryAddress } from "../slices/cartSlice";
+import { savedeliveryAddress } from "../slices/cartSlice";
 import Steps from "../ui/Steps";
 
 const DeliveryAddressPage = () => {
@@ -21,12 +21,12 @@ const DeliveryAddressPage = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(saveDeliveryAddress({ address, city, postcode, country }));
+    dispatch(savedeliveryAddress({ address, city, postcode, country }));
     navigate("/payment");
   };
   return (
     <FormContainer>
-      <Steps step1 step2/>
+      <Steps step1 step2 />
       <h1>Delivery Address</h1>
 
       <Form onSubmit={handleSubmit}>
@@ -71,7 +71,7 @@ const DeliveryAddressPage = () => {
         </Form.Group>
 
         <Button className="my-2" variant="primary" type="submit">
-          Submit
+          Continue
         </Button>
       </Form>
     </FormContainer>
