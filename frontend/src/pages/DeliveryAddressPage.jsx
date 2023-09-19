@@ -4,6 +4,7 @@ import FormContainer from "../ui/FormContainer";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { saveDeliveryAddress } from "../slices/cartSlice";
+import Steps from "../ui/Steps";
 
 const DeliveryAddressPage = () => {
   const cart = useSelector((state) => state.cart);
@@ -25,6 +26,7 @@ const DeliveryAddressPage = () => {
   };
   return (
     <FormContainer>
+      <Steps step1 step2/>
       <h1>Delivery Address</h1>
 
       <Form onSubmit={handleSubmit}>
