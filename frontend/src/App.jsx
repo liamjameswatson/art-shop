@@ -8,6 +8,7 @@ import RegisterPage from "./pages/RegisterPage";
 import DeliveryAddressPage from "./pages/DeliveryAddressPage";
 import ProtectedRoute from "./ui/ProtectedRoute";
 import PaymentPage from "./pages/PaymentPage";
+import PlaceOrderPage from "./pages/PlaceOrderPage";
 
 const router = createBrowserRouter([
   {
@@ -34,6 +35,7 @@ const router = createBrowserRouter([
         path: "/register",
         element: <RegisterPage />,
       },
+      //USERS ONLY
       {
         path: "",
         element: <ProtectedRoute />,
@@ -45,6 +47,10 @@ const router = createBrowserRouter([
           {
             path: "payment",
             element: <PaymentPage />,
+          },
+          {
+            path: "placeorder",
+            element: <PlaceOrderPage />,
           },
         ],
       },
