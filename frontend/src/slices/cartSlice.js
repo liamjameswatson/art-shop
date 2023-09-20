@@ -26,6 +26,18 @@ const cartSlice = createSlice({
       return updateCart(state);
     },
 
+    // return cartItems that don't match the payload id
+    removeFromCart: (state, action) => {
+      state.cartItems = state.cartItems.filter(
+        (item) => item._id !== action.payload
+      );
+      return updateCart(state);
+    },
+    clearCartItems: (state) => {
+      state.cartItems = []; // set cartItems to an empty array
+      return updateCart(state);
+    },
+
     savedeliveryAddress: (state, action) => {
       state.deliveryAddress = action.payload;
       return updateCart(state);
@@ -35,20 +47,13 @@ const cartSlice = createSlice({
       state.paymentMethod = action.payload;
       return updateCart(state);
     },
-
-    // return cartItems that don't match the payload id
-    removeFromCart: (state, action) => {
-      state.cartItems = state.cartItems.filter(
-        (item) => item._id !== action.payload
-      );
-      return updateCart(state);
-    },
   },
 });
 
 export const {
   addToCart,
   removeFromCart,
+  clearCartItems,
   savedeliveryAddress,
   savePaymentMethod,
 } = cartSlice.actions;
