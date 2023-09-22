@@ -15,12 +15,15 @@ const protect = asyncHandler(async (req, res, next) => {
       req.user = await User.findById(decoded.userId).select("-password"); // returns user without the password
       next();
     } catch (error) {
-      console.log(error);
+  
       res.status(401);
+     
       throw new Error("Not authorized, token failed");
     }
   } else {
     res.status(401);
+    
+
     throw new Error("Not authorized, no token");
   }
 });
@@ -29,10 +32,12 @@ const protect = asyncHandler(async (req, res, next) => {
 const protectAdmin = asyncHandler(async (req, res, next) => {
   if (req.user && req.user.role === "admin") {
     next();
-  } else res.status(401);
-  throw new Error(
-    "Not authorized, you are not authorized to access this route"
-  );
+  } else {
+    res.status(401);
+    throw new Error(
+      "Not authorized, you are not authorized to access this route"
+    );
+  }
 });
 
 export { protectAdmin, protect };

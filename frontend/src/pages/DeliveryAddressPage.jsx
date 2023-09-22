@@ -9,7 +9,6 @@ import Steps from "../ui/Steps";
 const DeliveryAddressPage = () => {
   const cart = useSelector((state) => state.cart);
   const { deliveryAddress } = cart;
-  console.log(deliveryAddress);
 
   const [address, setAddress] = useState(deliveryAddress?.address || "");
   const [city, setCity] = useState(deliveryAddress?.city || "");
