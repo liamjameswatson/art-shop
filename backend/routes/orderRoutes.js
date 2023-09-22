@@ -23,7 +23,7 @@ router
 router.route("/mine").get(protect, getMyOrders);
 
 // Get order by ID
-router.route("/:id").get(protect, protectAdmin, getOrderByID);
+router.route("/:id").get(protect, getOrderByID);
 
 // Update order to paid
 router.route("/:id/paid").put(protect, protectAdmin, UpdateOrderToPaid);
