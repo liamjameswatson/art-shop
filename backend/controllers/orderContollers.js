@@ -1,13 +1,14 @@
 import asyncHandler from "../middleware/asyncHandler.js";
 import Order from "../models/orderModel.js";
 
+
 // @desc Create new order
 // @route POST /api/oders
 // @access Private (Signed in Users Only)
 const addOrderItems = asyncHandler(async (req, res) => {
   const {
     orderItems,
-    shippingAdrdress,
+    deliveryAddress,
     paymentMethod,
     itemsPrice,
     taxPrice,
@@ -22,18 +23,18 @@ const addOrderItems = asyncHandler(async (req, res) => {
   } else {
     // create a new order with user ID
     const order = new Order({
-      // product is a ref in orderModel - see orderModel. Need to map to get products
-      orderItems: orderItems.map((order) => ({
-        ...order, // for each order spread out the name, quantity, image, and price
-        product: order._id, // product is this object's id
-        id: undefined, // product is the id, so the id is undefined, don't need it.
-        user: req.user_.id,
+      orderItems: orderItems.map((x) => ({
+        ...x,
+        product: x._id,
+        _id: undefined,
       })),
-      shippingAdrdress,
+      user: req.user._id,
+      deliveryAddress,
       paymentMethod,
       itemsPrice,
       taxPrice,
       deliveryPrice,
+      totalPrice,
     });
 
     const createdOrder = await order.save();
@@ -96,3 +97,42 @@ export {
   UpdateOrderToPaid,
   getOrders,
 };
+
+// const addOrderItems = asyncHandler(async (req, res) => {
+//   const {
+//     orderItems,
+//     deliveryAdrdress,
+//     paymentMethod,
+//     itemsPrice,
+//     taxPrice,
+//     deliveryPrice,
+//     totalPrice,
+//   } = req.body;
+
+//   if (orderItems && orderItems.length === 0) {
+//     // Nothing in the basket
+//     res.status(400);
+//     throw new Error("You need at least one item to make an order");
+//   } else {
+//     // create a new order with user ID
+//     const order = new Order({
+//       // product is a ref in orderModel - see orderModel. Need to map to get products
+//       orderItems: orderItems.map((order) => ({
+//         ...order, // for each order spread out the name, quantity, image, and price
+//         product: order._id, // product is this object's id
+//         _id: undefined, // product is the id, so the id is undefined, don't need it.
+//       })),
+//       user: req.user._id,
+//       deliveryAddress,
+//       paymentMethod,
+//       itemsPrice,
+//       taxPrice,
+//       deliveryPrice,
+//       totalPrice,
+//     });
+
+//     const createdOrder = await order.save();
+
+//     res.status(201).json(createdOrder);
+//   }
+// });

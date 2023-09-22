@@ -10,7 +10,7 @@ export const updateCart = (state) => {
     state.cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0)
   );
 
-  // Calculate delivery price (If order over £100 shipping is free, else £10)
+  // Calculate delivery price (If order over £100 delivery is free, else £10)
   state.deliveryPrice = addDecimals(state.itemsPrice > 100 ? 0 : 10);
 
   // Calculate tax price (15% tax)

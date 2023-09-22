@@ -15,7 +15,14 @@ const port = process.env.PORT || 8000;
 connectDB(); // connect to database
 
 const app = express();
-app.use(cors());
+
+const corsOptions = {
+  origin: 'http://localhost:5173', //  frontend URL
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true, // Required for sending cookies in cross-origin requests
+};
+
+app.use(cors(corsOptions));
 
 //Body parser middleware
 app.use(express.json());
