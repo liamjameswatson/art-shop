@@ -1,8 +1,18 @@
+import { useEffect } from "react";
 import { Link, useParams } from "react-router-dom";
 import { Row, Col, ListGroup, Image, Button, Card } from "react-bootstrap";
 import Message from "../ui/Message";
 import Spinner from "../ui/Spinner";
-import { useGetOrderDetailsQuery } from "../slices/ordersApiSlice";
+import { toast } from "react-toastify";
+import { useSelector } from "react-redux";
+
+import {
+  useGetOrderDetailsQuery,
+  usePayOrderMutation,
+  useGetPayPalClientIdQuery,
+} from "../slices/ordersApiSlice";
+
+import { PayPalButtons, usePayPalScriptReducer } from "@paypal/react-paypal-js";
 
 const OrderPage = () => {
   const { id: orderId } = useParams();
@@ -15,7 +25,39 @@ const OrderPage = () => {
     error,
   } = useGetOrderDetailsQuery(orderId);
 
-  console.log(order);
+  const [payOrder, { isLoading: loadingPayment, error: errorPayment }] =
+    usePayOrderMutation();
+
+  const [{ isPending }, paypalDispatch] = usePayPalScriptReducer();
+
+  const {
+    data: paypal,
+    isLoading: loadingPayPal,
+    errorPayPal,
+  } = useGetPayPalClientIdQuery();
+
+  const { userInfo } = useSelector((state) => state.auth);
+
+  useEffect(() => {
+    if (!errorPayPal && !loadingPayPal && paypal.clientID) {
+      const loadPayPalScript = async () => {
+        paypalDispatch({
+          type: "resetOptions",
+          value: {
+            clientId: paypal.clientId,
+            currency: "GBP",
+          },
+        });
+        paypalDispatch({ type: "setLoadingStatus", value: "pending" });
+      };
+      if (order && !order.isPaid) {
+        if (!window.paypal) {
+          // if not already loaded
+          loadPayPalScript();
+        }
+      }
+    }
+  }, [errorPayPal, loadingPayPal, order, paypal, paypalDispatch]);
 
   return isLoading ? (
     <Spinner />
@@ -68,7 +110,7 @@ const OrderPage = () => {
                 <ListGroup.Item key={index}>
                   <Row>
                     <Col md={3} sm={3} xs={2}>
-                      <Image src={item.image} alt={item.name} fluid rounded/>
+                      <Image src={item.image} alt={item.name} fluid rounded />
                     </Col>
                     <Col>
                       {" "}
@@ -76,7 +118,8 @@ const OrderPage = () => {
                     </Col>
                     <Col md={4} sm={4} xs={4}>
                       {" "}
-                      {item.quantity} x £{item.price} = £{ item.quantity * item.price}
+                      {item.quantity} x £{item.price} = £
+                      {item.quantity * item.price}
                     </Col>
                   </Row>
                 </ListGroup.Item>
@@ -108,8 +151,8 @@ const OrderPage = () => {
                   <Col>£{order.totalPrice}</Col>
                 </Row>
               </ListGroup.Item>
-            {/* PAY ORDER PLACEHOLDER */}
-            {/* MARK AS DELIVERED*/}
+              {/* PAY ORDER PLACEHOLDER */}
+              {/* MARK AS DELIVERED*/}
             </ListGroup>
           </Card>
         </Col>
