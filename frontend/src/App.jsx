@@ -9,6 +9,7 @@ import DeliveryAddressPage from "./pages/DeliveryAddressPage";
 import ProtectedRoute from "./ui/ProtectedRoute";
 import PaymentPage from "./pages/PaymentPage";
 import PlaceOrderPage from "./pages/PlaceOrderPage";
+import OrderPage from "./pages/OrderPage";
 
 const router = createBrowserRouter([
   {
@@ -51,6 +52,10 @@ const router = createBrowserRouter([
           {
             path: "placeorder",
             element: <PlaceOrderPage />,
+          },
+          {
+            path: "order/:id",
+            element: <OrderPage />,
           },
         ],
       },

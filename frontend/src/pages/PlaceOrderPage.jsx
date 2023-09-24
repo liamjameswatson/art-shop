@@ -52,7 +52,7 @@ const PlaceOrderPage = () => {
       // clear cart
       dispatch(clearCartItems());
 
-      navigate(`order/${res._id}`); //success page
+      navigate(`/order/${res._id}`); //success page
     } catch (error) {
       toast.error(error.data.message);
       console.log(error);
