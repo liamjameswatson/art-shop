@@ -11,6 +11,7 @@ import PaymentPage from "./pages/PaymentPage";
 import PlaceOrderPage from "./pages/PlaceOrderPage";
 import OrderPage from "./pages/OrderPage";
 
+
 const router = createBrowserRouter([
   {
     element: <AppLayout />,

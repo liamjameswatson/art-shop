@@ -17,8 +17,8 @@ connectDB(); // connect to database
 const app = express();
 
 const corsOptions = {
-  origin: 'http://localhost:5173', //  frontend URL
-  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  origin: "http://localhost:5173", //  frontend URL
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true, // Required for sending cookies in cross-origin requests
 };
 
@@ -39,6 +39,10 @@ app.get("/", (req, res) => {
 app.use("/api/products", productRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/orders", orderRoutes);
+
+app.get("/api/config/paypal", (req, res) =>
+  res.send({ clientId: process.env.PAYPAL_CLIENT_ID })
+);
 
 app.use(notFound);
 app.use(errorHandler);
