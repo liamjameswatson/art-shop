@@ -19,6 +19,9 @@ const ProfilePage = () => {
   //get userInfo from state.auth
   const { userInfo } = useSelector((state) => state.auth);
 
+  const [updateProfile, { isLoading: loadingProfileUpdate }] =
+    useProfileMutation();
+
   useEffect(() => {
     if (userInfo) {
       setName(userInfo.name);
@@ -26,9 +29,24 @@ const ProfilePage = () => {
     }
   }, [userInfo]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("submitted");
+    if (password !== confirmPassword) {
+      toast.error("Passwords do not match");
+    } else {
+      try {
+        const res = await updateProfile({
+          _id: userInfo._id,
+          name,
+          email,
+          password,
+        }).unwrap();
+        dispatch(setCredentials(res))
+        toast.success("Profile updated successfully")
+      } catch (error) {
+        toast.error(error?.data?.message || error.error)
+      }
+    }
   };
 
   return (
@@ -76,8 +94,9 @@ const ProfilePage = () => {
             ></Form.Control>
           </Form.Group>
           <Button type="submit" variant="primary" className="my-2">
-            Update
+          Update
           </Button>
+            {loadingProfileUpdate && <Spinner /> }
         </Form>
       </Col>
       <Col md={9}>Column</Col>
