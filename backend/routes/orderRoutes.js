@@ -20,7 +20,7 @@ router
   .post(protect, addOrderItems);
 
 // User can get their orders
-router.route("/mine").get(protect, getMyOrders);
+router.route("/myorders").get(protect, getMyOrders);
 
 // Get order by ID
 router.route("/:id").get(protect, getOrderByID);
