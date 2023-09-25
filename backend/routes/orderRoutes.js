@@ -26,7 +26,7 @@ router.route("/mine").get(protect, getMyOrders);
 router.route("/:id").get(protect, getOrderByID);
 
 // Update order to paid
-router.route("/:id/paid").put(protect, protectAdmin, UpdateOrderToPaid);
+router.route("/:id/pay").put(protect, UpdateOrderToPaid);
 
 //Update order to delivered
 router
