@@ -12,17 +12,16 @@ const protect = asyncHandler(async (req, res, next) => {
   if (token) {
     try {
       const decoded = jwt.verify(token, process.env.JWT_SECRET); //decoded becomes an object with a userId field
+      // console.log(decoded);
       req.user = await User.findById(decoded.userId).select("-password"); // returns user without the password
       next();
     } catch (error) {
-  
       res.status(401);
-     
+
       throw new Error("Not authorized, token failed");
     }
   } else {
     res.status(401);
-    
 
     throw new Error("Not authorized, no token");
   }
@@ -31,6 +30,7 @@ const protect = asyncHandler(async (req, res, next) => {
 //Protect Admin Routes
 const protectAdmin = asyncHandler(async (req, res, next) => {
   if (req.user && req.user.role === "admin") {
+    console.log("ROLE...", req.user.role);
     next();
   } else {
     res.status(401);
