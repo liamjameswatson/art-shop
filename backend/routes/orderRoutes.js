@@ -7,7 +7,7 @@ import {
   UpdateOrderToPaid,
   UpdateOrderToDelivered,
   getOrders,
-} from "../controllers/orderContollers.js";
+} from "../controllers/orderContoller.js";
 
 import { protect, protectAdmin } from "../middleware/authMiddleware.js";
 
@@ -16,11 +16,12 @@ const router = express.Router();
 // GET all orders, create an order
 router
   .route("/")
-  .get(protect, protectAdmin, getOrders)
+  // .get(protect, protectAdmin, getOrders)
+  .get(protect, getOrders)
   .post(protect, addOrderItems);
 
 // User can get their orders
-router.route("/mine").get(protect, getMyOrders);
+router.route("/myorders").get(protect, getMyOrders);
 
 // Get order by ID
 router.route("/:id").get(protect, getOrderByID);
@@ -29,8 +30,7 @@ router.route("/:id").get(protect, getOrderByID);
 router.route("/:id/pay").put(protect, UpdateOrderToPaid);
 
 //Update order to delivered
-router
-  .route("/:id/delivered")
-  .put(protect, protectAdmin, UpdateOrderToDelivered);
+router.route("/:id/deliver").put(protect, UpdateOrderToDelivered);
+// router.route("/:id/deliver").put(protect, protectAdmin, UpdateOrderToDelivered);
 
 export default router;

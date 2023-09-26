@@ -31,6 +31,15 @@ app.use(express.urlencoded({ extended: true }));
 // Cookie parser middleware - allows access of req.cookies
 app.use(cookieParser());
 
+// Create a middleware function to log req.user
+const logUserInfo = (req, res, next) => {
+  // console.log("User info:", req);
+  next();
+};
+
+// Use the logUserInfo middleware before the protected routes
+app.use(logUserInfo);
+
 // Get initial route
 app.get("/", (req, res) => {
   res.send("API is running...");

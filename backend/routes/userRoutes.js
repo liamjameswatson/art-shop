@@ -17,7 +17,8 @@ import { protect, protectAdmin } from "../middleware/authMiddleware.js";
 const router = express.Router();
 
 // GET all users, register user
-router.route("/").get(protect, protectAdmin, getUsers).post(registerUser);
+// router.route("/").get(protect, protectAdmin, getUsers).post(registerUser);
+router.route("/").get(protect, getUsers).post(registerUser);
 
 // login user
 router.post("/login", authUser);
@@ -34,8 +35,13 @@ router
 // get, update and delete user  (admin route)
 router
   .route("/:id")
-  .get(protect, protectAdmin, getUserById)
-  .put(protect, protectAdmin, updateUser)
-  .delete(protect, protectAdmin, deleteUser);
+  // .get(protect, protectAdmin, getUserById)
+  .get(protect, getUserById)
+
+  // .put(protect, protectAdmin, updateUser)
+  .put(protect, updateUser)
+
+  // .delete(protect, protectAdmin, deleteUser);
+  .delete(protect, deleteUser);
 
 export default router;

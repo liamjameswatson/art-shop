@@ -10,7 +10,9 @@ import ProtectedRoute from "./ui/ProtectedRoute";
 import PaymentPage from "./pages/PaymentPage";
 import PlaceOrderPage from "./pages/PlaceOrderPage";
 import OrderPage from "./pages/OrderPage";
-
+import ProfilePage from "./pages/ProfilePage";
+import AdminRoute from "./ui/AdminRoute";
+import OrderListPage from "./pages/admin/OrderListPage";
 
 const router = createBrowserRouter([
   {
@@ -58,9 +60,24 @@ const router = createBrowserRouter([
             path: "order/:id",
             element: <OrderPage />,
           },
+          {
+            path: "profile",
+            element: <ProfilePage />,
+          },
         ],
       },
-    ],
+          // ADMIN ONLY
+          {
+            path: "",
+            element: <AdminRoute />,
+            children: [
+              {
+                path: "admin/orderlist",
+                element: <OrderListPage />,
+              },
+            ],
+          },
+        ],
   },
 ]);
 
