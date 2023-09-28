@@ -13,6 +13,7 @@ import OrderPage from "./pages/OrderPage";
 import ProfilePage from "./pages/ProfilePage";
 import AdminRoute from "./ui/AdminRoute";
 import OrderListPage from "./pages/admin/OrderListPage";
+import ProductListPage from "./pages/admin/ProductListPage";
 
 const router = createBrowserRouter([
   {
@@ -74,6 +75,10 @@ const router = createBrowserRouter([
               {
                 path: "admin/orderlist",
                 element: <OrderListPage />,
+              },
+              {
+                path: "admin/productlist",
+                element: <ProductListPage/>,
               },
             ],
           },
