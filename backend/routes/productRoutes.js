@@ -3,14 +3,24 @@ import express from "express";
 import {
   getProducts,
   getProductById,
+  createProduct,
+  updateProduct,
 } from "../controllers/productController.js";
+
+// import { protect, protectAdmin } from "../middleware/authMiddleware.js";
+import { protect } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
 // GET all products
-router.route("/").get(getProducts);
+// router.route("/").get(getProducts).post(protect, protectAdmin, createProduct);
+router.route("/").get(getProducts).post(protect, createProduct);
 
 // GET Single products
-router.route("/:id").get(getProductById);
+router
+  .route("/:id")
+  .get(getProductById)
+  // .put(protect, protectAdmin, updateProduct);
+  .put(protect, updateProduct);
 
 export default router;
