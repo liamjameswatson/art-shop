@@ -1,4 +1,4 @@
-import { PRODUCTS_URL } from "../constants";
+import { PRODUCTS_URL, UPLOADS_URL } from "../constants";
 import { apiSlice } from "./apiSlice";
 // apiSlice is for async requests that create endpoints
 
@@ -6,7 +6,7 @@ export const productsApiSlice = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getProducts: builder.query({
       query: () => ({ url: PRODUCTS_URL }),
-      providesTags: ['Products'],
+      providesTags: ["Products"],
       keepUnusedDataFor: 5, // how long data should be kept in the cache - 5 secs
     }),
     getProductDetails: builder.query({
@@ -28,6 +28,13 @@ export const productsApiSlice = apiSlice.injectEndpoints({
       }),
       invalidatesTags: ["Products"],
     }),
+    uploadProductImage: builder.mutation({
+      query: (data) => ({
+        url: `${UPLOADS_URL}`,
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -36,4 +43,5 @@ export const {
   useGetProductDetailsQuery,
   useCreateProductMutation,
   useUpdateProductMutation,
+  useUploadProductImageMutation
 } = productsApiSlice;
