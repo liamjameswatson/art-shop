@@ -6,6 +6,7 @@ import Spinner from "../../ui/Spinner";
 import {
   useGetProductsQuery,
   useCreateProductMutation,
+  useDeleteProductMutation,
 } from "../../slices/productsApiSlice";
 
 import { toast } from "react-toastify";
@@ -19,8 +20,17 @@ const ProductListPage = () => {
     { isLoading: loadingCreateProduct, error: createProductError },
   ] = useCreateProductMutation();
 
-  const handleDelete = (id) => {
-    console.log("delete", id);
+  const [deleteProduct, { isLoading: isDeleting }] = useDeleteProductMutation();
+
+  const handleDelete = async (id) => {
+    if (window.confirm("Are you sure you want to delete?")) {
+      try {
+        await deleteProduct(id);
+        refetch();
+      } catch (error) {
+        toast.error(error?.data?.message || error.message);
+      }
+    }
   };
 
   const handleCreateProduct = async () => {
@@ -48,7 +58,10 @@ const ProductListPage = () => {
           </Button>
         </Col>
       </Row>
+
       {loadingCreateProduct && <Spinner />}
+      {isDeleting && <Spinner />}
+
       {isLoading ? (
         <Spinner />
       ) : error ? (
