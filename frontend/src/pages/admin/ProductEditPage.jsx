@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router-dom";
-import { Form, Button } from "react-bootstrap";
+import { Form, Button, FormGroup } from "react-bootstrap";
 import Spinner from "../../ui/Spinner";
 import FormContainer from "../../ui/FormContainer";
 import Message from "../../ui/Message";
@@ -10,6 +10,7 @@ import { toast } from "react-toastify";
 import {
   useUpdateProductMutation,
   useGetProductDetailsQuery,
+  useUploadProductImageMutation,
 } from "../../slices/productsApiSlice";
 
 const ProductEditPage = () => {
@@ -33,6 +34,9 @@ const ProductEditPage = () => {
   // console.log(product)
 
   const [updateProduct, { isLoading: isUpdating }] = useUpdateProductMutation();
+
+  const [uploadProductImage, { isLoading: isUploading }] =
+    useUploadProductImageMutation();
 
   useEffect(() => {
     if (product) {
@@ -62,6 +66,19 @@ const ProductEditPage = () => {
     } else {
       toast.success("Product updated");
       navigate("/admin/productlist");
+    }
+  };
+
+  const handleUploadFile = async (e) => {
+    // console.log(e.target.files[0]);
+    const formData = new FormData();
+    formData.append("image", e.target.files[0]);
+    try {
+      const res = await uploadProductImage(formData).unwrap();
+      toast.success(res.message); // images uploaded successfully from multer creation
+      setImage(res.image);
+    } catch (error) {
+      toast.error(error?.data?.message || error.error);
     }
   };
 
@@ -101,7 +118,22 @@ const ProductEditPage = () => {
               ></Form.Control>
             </Form.Group>
 
-            {/* IMAGE PLACEHOLDER*/}
+            <FormGroup className="my-2" controlId="image">
+              <Form.Label>Image</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Enter Image url"
+                value={image}
+                onChange={(e) => setImage(e.target.value)}
+              ></Form.Control>
+
+              <Form.Control
+                type="file"
+                label="Choose file"
+                onChange={handleUploadFile}
+              ></Form.Control>
+              {isUploading && <Spinner />}
+            </FormGroup>
 
             <Form.Group className="my-2" controlId="category">
               <Form.Label>Category</Form.Label>
