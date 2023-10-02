@@ -12,6 +12,7 @@
   "dependencies": {
     "@paypal/react-paypal-js": "^8.1.3",
     "@reduxjs/toolkit": "^1.9.5",
+    "art-shop": "file:..",
     "axios": "^1.5.0",
     "bootstrap": "^5.3.1",
     "react": "^18.2.0",
