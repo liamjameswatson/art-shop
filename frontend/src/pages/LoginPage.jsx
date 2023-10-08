@@ -18,6 +18,7 @@ const LoginPage = () => {
   const [login, { isLoading, error }] = useLoginMutation();
 
   const { userInfo } = useSelector((state) => state.auth);
+  console.log("userinfo", userInfo);
 
   // check to see if 'redirect' has been set in the URL
   const { search } = useLocation(); // get search
@@ -25,7 +26,7 @@ const LoginPage = () => {
   const redirect = searchParams.get("redirect") || "/"; // pass 'redirect' to searchParams or '/'
 
   useEffect(() => {
-    if (userInfo) {
+    if (("userinfo", userInfo)) {
       // if there is user info in local storage or in state
       navigate(redirect);
     }
@@ -36,9 +37,10 @@ const LoginPage = () => {
     try {
       // call login mutation, passing in email and password and unwrap the promise
       const response = await login({ email, password }).unwrap();
+      console.log("res...", response);
       // send the response from login to setCredentials
       dispatch(setCredentials({ ...response }));
-      navigate(redirect);
+      // navigate(redirect);
     } catch (error) {
       toast.error(error?.data?.message || error.error);
     }

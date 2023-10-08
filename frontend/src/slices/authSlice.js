@@ -16,7 +16,9 @@ const authSlice = createSlice({
     //login
     setCredentials: (state, action) => {
       state.userInfo = action.payload; // payload comes from backend
-      localStorage.setItem("userInfo", JSON.stringify(action.payload));
+
+      const { name, email } = action.payload;
+      localStorage.setItem("userInfo", JSON.stringify({ name, email }));
     },
 
     logout: (state) => {
