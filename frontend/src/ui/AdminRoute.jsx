@@ -14,3 +14,17 @@ const AdminRoute = () => {
 };
 
 export default AdminRoute;
+
+
+// const AdminRoute = () => {
+//   const { userInfo } = useSelector((state) => state.auth);
+//   console.log("userInfo", userInfo);
+//   console.log("Role", userInfo.role);
+//   return userInfo && userInfo.role === "admin" ? (
+//     <Outlet />
+//   ) : (
+//     <Navigate to="/login" replace />
+//   );
+// };
+
+// export default AdminRoute;

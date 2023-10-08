@@ -11,6 +11,8 @@ import userRoutes from "./routes/userRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
 
+import globalErrorHandler from "./controllers/errorController.js";
+
 import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
 
 const port = process.env.PORT || 8000;
@@ -36,7 +38,9 @@ app.use(cookieParser());
 
 // Create a middleware function to log req.user
 const logUserInfo = (req, res, next) => {
-  // console.log("User info:", req);
+  req.requestTime = new Date().toDateString();
+  console.log("cookie", req.cookies);
+  console.log("user", req.user);
   next();
 };
 
@@ -71,7 +75,7 @@ if (process.env.NODE_ENV === "production") {
     res.send("API is running...");
   });
 }
-
+app.use(globalErrorHandler);
 app.use(notFound);
 app.use(errorHandler);
 

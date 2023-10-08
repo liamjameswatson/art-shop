@@ -9,7 +9,7 @@ import {
   getOrders,
 } from "../controllers/orderContoller.js";
 
-import { protect, protectAdmin } from "../middleware/authMiddleware.js";
+import { protect, restrictTo } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 

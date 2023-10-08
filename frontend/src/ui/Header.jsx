@@ -3,6 +3,7 @@ import { Navbar, Nav, Container, Badge, NavDropdown } from "react-bootstrap";
 import { FaShoppingCart, FaUser } from "react-icons/fa";
 import { LinkContainer } from "react-router-bootstrap";
 import { useLogoutMutation } from "../slices/usersApiSlice";
+import logo from "../assets/images/logo/logo.png";
 
 import { logout } from "../slices/authSlice";
 
@@ -33,7 +34,13 @@ function Header() {
       <Navbar bg="dark" variant="dark" expand="md" collapseOnSelect>
         <Container>
           <LinkContainer to="/">
-            <Navbar.Brand>Art Shop</Navbar.Brand>
+            <Navbar.Brand>
+              <img
+                style={{ width: "60px", height: "auto" }}
+                src={logo}
+                alt="Art Shop"
+              />
+            </Navbar.Brand>
           </LinkContainer>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav">
