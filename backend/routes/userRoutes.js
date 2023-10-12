@@ -10,6 +10,8 @@ import {
   getUserById,
   updateUser,
   deleteUser,
+  forgotPassword,
+  resetPassword,
 } from "../controllers/userController.js";
 
 import { protect, restrictTo } from "../middleware/authMiddleware.js";
@@ -25,6 +27,9 @@ router.post("/login", loginUser);
 
 // logout user
 router.post("/logout", logoutUser);
+
+router.post("/forgot-password", forgotPassword);
+router.put("/reset-password/:token", resetPassword);
 
 // get and update user profile (user route)
 router

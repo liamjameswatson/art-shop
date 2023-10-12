@@ -39,8 +39,8 @@ app.use(cookieParser());
 // Create a middleware function to log req.user
 const logUserInfo = (req, res, next) => {
   req.requestTime = new Date().toDateString();
-  console.log("cookie", req.cookies);
-  console.log("user", req.user);
+  // console.log("cookie", req.cookies);
+  // console.log("user", req.user);
   next();
 };
 
@@ -80,5 +80,6 @@ app.use(notFound);
 app.use(errorHandler);
 
 app.listen(port, () => {
+  console.log(process.env.NODE_ENV);
   console.log(`Server running on port ${port}`);
 });
