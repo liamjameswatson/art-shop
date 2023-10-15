@@ -8,6 +8,9 @@ import Message from "../ui/Message";
 const HomePage = () => {
   const { data: products, isLoading, error } = useGetProductsQuery();
 
+  const imageFileName = "liasm.jpeg"; // Replace with your actual image file name
+  const imageUrl = `../uploads/${imageFileName}`;
+
   return (
     <>
       {isLoading ? (
@@ -23,10 +26,10 @@ const HomePage = () => {
             {products.map((product, index) => (
               <Col key={index} sm={12} md={6} lg={4} xl={3}>
                 <Product product={product} />
-            
               </Col>
             ))}
           </Row>{" "}
+          <img src={imageUrl} alt="Art Shop Image" />
         </>
       )}
     </>

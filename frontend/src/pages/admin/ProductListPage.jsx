@@ -13,7 +13,7 @@ import { toast } from "react-toastify";
 
 const ProductListPage = () => {
   const { data: products, isLoading, error, refetch } = useGetProductsQuery();
-  //   console.log(products);
+  console.log(products);
 
   const [
     createProduct,

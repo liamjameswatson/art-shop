@@ -17,7 +17,6 @@ const router = express.Router();
 // router.route("/").get(getProducts).post(protect, protectAdmin, createProduct);
 router.route("/").get(getProducts).post(protect, createProduct);
 
-
 // GET Single products
 router
   .route("/:id")
