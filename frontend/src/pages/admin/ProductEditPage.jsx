@@ -21,9 +21,12 @@ const ProductEditPage = () => {
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
   const [image, setImage] = useState("");
+  const [otherImages, setOtherImages] = useState([]);
   const [category, setCategory] = useState("");
   const [price, setPrice] = useState(0);
   const [stockNumber, setStockNumber] = useState(0);
+
+  console.log("other state =", otherImages);
 
   const {
     data: product,
@@ -31,7 +34,7 @@ const ProductEditPage = () => {
     // refetch,
     error,
   } = useGetProductDetailsQuery(productId); //productId from url
-  // console.log(product)
+  // console.log(product);
 
   const [updateProduct, { isLoading: isUpdating }] = useUpdateProductMutation();
 
@@ -43,6 +46,7 @@ const ProductEditPage = () => {
       setName(product.name);
       setDescription(product.description);
       setImage(product.image);
+      setOtherImages(product.otherImages);
       setCategory(product.category);
       setPrice(product.price);
       setStockNumber(product.stockNumber);
@@ -56,10 +60,12 @@ const ProductEditPage = () => {
       name,
       description,
       image,
+      otherImages,
       category,
       stockNumber,
       price,
     };
+    console.log(updateProduct);
     const result = await updateProduct(updatedProduct);
     if (result.error) {
       toast.error(result.error);
@@ -73,9 +79,25 @@ const ProductEditPage = () => {
     const formData = new FormData();
     formData.append("image", e.target.files[0]);
     try {
-      const res = await uploadProductImage(formData).unwrap();
+      const res = await updateProduct(formData).unwrap();
       toast.success(res.message);
       setImage(res.image);
+    } catch (error) {
+      toast.error(error?.data?.message || error.error);
+      console.log(error);
+    }
+  };
+
+  const handleUploadFiles = async (e) => {
+    const formData = new FormData();
+    for (let i = 0; i < e.target.files.length; i++) {
+      formData.append("otherImages", e.target.files[i]);
+    }
+
+    try {
+      const res = await updateProduct(formData).unwrap();
+      toast.success(res.message);
+      setOtherImages([...otherImages]);
     } catch (error) {
       toast.error(error?.data?.message || error.error);
       console.log(error);
@@ -135,6 +157,25 @@ const ProductEditPage = () => {
               {isUploading && <Spinner />}
             </FormGroup>
 
+            {/* ////////////////////////////////////////////////////// */}
+            <FormGroup className="my-2" controlId="otherImages">
+              <Form.Label>otherImages</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder="Other Images"
+                value={otherImages}
+                onChange={(e) => setOtherImages(e.target.value)}
+              ></Form.Control>
+
+              <Form.Control
+                type="file"
+                label="Choose file"
+                onChange={handleUploadFiles}
+                multiple
+              ></Form.Control>
+              {isUploading && <Spinner />}
+            </FormGroup>
+            {/* ////////////////////////////////////////// */}
             <Form.Group className="my-2" controlId="category">
               <Form.Label>Category</Form.Label>
               <Form.Control

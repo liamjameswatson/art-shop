@@ -40,6 +40,7 @@ const ProductListPage = () => {
       try {
         await createProduct();
         refetch();
+        console.log(products);
       } catch (error) {
         toast.error(error?.data?.message || error.error);
       }

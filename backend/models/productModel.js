@@ -1,7 +1,8 @@
 import mongoose from "mongoose";
 
-const productSchema = new mongoose.Schema({
-  user: {
+const productSchema = new mongoose.Schema(
+  {
+    user: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
@@ -16,6 +17,7 @@ const productSchema = new mongoose.Schema({
       required: true,
       trim: true,
     },
+    otherImages: [String],
     description: {
       type: String,
       required: true,
@@ -38,7 +40,8 @@ const productSchema = new mongoose.Schema({
 
   {
     timestamps: true, // add createdAt and updatedAt timestamps
-  });
+  }
+);
 const Product = mongoose.model("Product", productSchema);
 
 export default Product;

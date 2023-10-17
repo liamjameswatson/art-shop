@@ -7,9 +7,10 @@ import Message from "../ui/Message";
 
 const HomePage = () => {
   const { data: products, isLoading, error } = useGetProductsQuery();
+  console.log(products);
 
-  const imageFileName = "liasm.jpeg"; // Replace with your actual image file name
-  const imageUrl = `../uploads/${imageFileName}`;
+  // const imageFileName = "liasm.jpeg"; // Replace with your actual image file name
+  // const imageUrl = `../uploads/${imageFileName}`;
 
   return (
     <>
@@ -29,7 +30,7 @@ const HomePage = () => {
               </Col>
             ))}
           </Row>{" "}
-          <img src={imageUrl} alt="Art Shop Image" />
+          {/* <img src={imageUrl} alt="Art Shop Image" /> */}
         </>
       )}
     </>

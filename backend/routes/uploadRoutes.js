@@ -58,13 +58,13 @@ export default router;
 //   next();
 // }
 
-export function resizeImage(req, res, next) {
+export async function resizeImage(req, res, next) {
   console.log(req.file);
   if (!req.file) return next();
   console.log(req.body);
   req.file.filename = `Photo-${Date.now()}.jpeg`;
 
-  sharp(req.file.buffer)
+  await sharp(req.file.buffer)
     .resize(500, 500)
     .toFormat("jpeg")
     .jpeg({ quality: 90 })

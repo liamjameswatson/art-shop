@@ -1,5 +1,75 @@
 import asyncHandler from "../middleware/asyncHandler.js";
 import Product from "../models/productModel.js";
+import { AppError } from "../utils/appError.js";
+import multer from "multer";
+import sharp from "sharp";
+
+const multerStorage = multer.memoryStorage();
+
+const mutlerFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith("image")) {
+    cb(null, true);
+  } else {
+    cb(new AppError("Not an Image, please upload only images", 400), false);
+  }
+};
+
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: mutlerFilter,
+});
+
+export const uploadProductImage = upload.fields([
+  { name: "image", maxCount: 1 },
+  { name: "otherImages", maxCount: 6 },
+]);
+
+export const resizeProductimages = asyncHandler(async (req, res, next) => {
+  // console.log("body = ", req.body);
+  // console.log("other Images = ", req.files.otherImages);
+
+  if (!req.files.image || !req.files.otherImages) {
+    return next();
+  }
+
+  console.log("req.files.image = ", req.files.image);
+  console.log("req.files.otherImages = ", req.files.otherImages);
+  // Main Image
+
+  const imageFilename = `product-MainImg-${
+    req.params.id
+  }-${Date.now()}-image.jpeg`;
+
+  await sharp(req.files.image[0].buffer)
+    .resize(2000, 1333)
+    .toFormat("jpeg")
+    .jpeg({ quality: 90 })
+    .toFile(`uploads/${imageFilename}`);
+
+  req.body.image = `uploads/${imageFilename}`;
+
+  req.body.otherImages = [];
+  // console.log(req.body.otherImages);
+  await Promise.all(
+    req.files.otherImages.map(async (file, index) => {
+      const filename = `${file.originalname}-${
+        req.params.id
+      }-${Date.now()}-image${index + 1}.jpeg`;
+      console.log(index, " and  ", file);
+
+      await sharp(file.buffer)
+        .resize(500, 500)
+        .toFormat("jpeg")
+        .jpeg({ quality: 90 })
+        .toFile(`uploads/${filename}`);
+
+      req.body.otherImages.push(filename);
+      console.log("LISTR = ", req.body.otherImages);
+    })
+  );
+  // console.log(req.body);
+  next();
+});
 
 // @desc Fetch all products
 // @route GET /api/products
@@ -17,6 +87,7 @@ const getProductById = asyncHandler(async (req, res) => {
   const product = await Product.findById(req.params.id);
 
   if (product) {
+    // console.log(product);
     return res.json(product);
   } else {
     // use errorHandler
@@ -26,13 +97,14 @@ const getProductById = asyncHandler(async (req, res) => {
 });
 
 // @desc Create a product
-// @route POST /api/products:id
+// @route POST /api/products
 // @access Private/ Admin
 const createProduct = asyncHandler(async (req, res) => {
   const product = new Product({
     name: "Sample name",
     description: "Sample description",
     image: "/images/sample.jpg",
+    otherImages: ["/images/sample.jpg", "/images/sample.jpg"],
     category: "sample category",
     price: 0,
     stockNumber: 0,
@@ -48,7 +120,15 @@ const createProduct = asyncHandler(async (req, res) => {
 // @access Private/Admin
 
 const updateProduct = asyncHandler(async (req, res) => {
-  const { name, price, description, image, category, stockNumber } = req.body;
+  const {
+    name,
+    price,
+    description,
+    image,
+    otherImages,
+    category,
+    stockNumber,
+  } = req.body;
 
   const product = await Product.findById(req.params.id);
 
@@ -57,6 +137,7 @@ const updateProduct = asyncHandler(async (req, res) => {
     product.price = price;
     product.description = description;
     product.image = image;
+    product.otherImages = otherImages;
     product.category = category;
     product.stockNumber = stockNumber;
 

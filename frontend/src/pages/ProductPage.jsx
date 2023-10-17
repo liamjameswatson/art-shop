@@ -30,17 +30,19 @@ const ProductPage = () => {
 
   const [quantity, setQuantity] = useState(1);
 
-  
   const {
     data: product,
     isLoading,
     error,
   } = useGetProductDetailsQuery(productId);
-  
+
+  const otherImages = product?.otherImages;
+  // console.log(otherImages);
+
   const handleAddToCart = () => {
     // send product and quantity to cart
-    dispatch(addToCart({...product, quantity}))
-    navigate('/cart')
+    dispatch(addToCart({ ...product, quantity }));
+    navigate("/cart");
   };
   return (
     <>
@@ -58,7 +60,16 @@ const ProductPage = () => {
         <>
           <Row>
             <Col md={5}>
-              <Image src={product.image} alt={product.name} fluid></Image>
+              <Image src={`/${product.image}`} alt={product.name} fluid></Image>
+              {otherImages.map((image, index) => (
+                <Image
+                  key={index}
+                  src={`/uploads/${image}`}
+                  alt={product.name}
+                  fluid
+                ></Image>
+              ))}
+              <h1>{[product.otherImages]}</h1>
             </Col>
             <Col md={4}>
               <ListGroup.Item>

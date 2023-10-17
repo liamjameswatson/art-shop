@@ -7,6 +7,7 @@ const Product = ({ product }) => {
       <Link to={`/product/${product._id}`}>
         <Card.Img src={product.image} variant="top" />
       </Link>
+      {console.log('image', product.image)}
 
       <Card.Body>
         <Link to={`/product/${product._id}`}>
