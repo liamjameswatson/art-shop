@@ -1,86 +1,102 @@
-// import { AppError } from "../utils/appError";
 import path from "path";
 import express from "express";
 import multer from "multer";
+import sharp from "sharp";
+import asyncHandler from "../middleware/asyncHandler.js";
+import fileNameProvider from "../utils/fileNameProvider.js";
+
+import { AppError } from "../utils/appError.js";
 
 const router = express.Router();
 
-const multerStorage = multer.diskStorage({
-  destination(req, file, cb) {
-    cb(null, "uploads");
-  },
-  filename(req, file, cb) {
-    const extension = file.mimetype.split("/")[1];
-    cb(null, `${req.body.name}-${Date.now()}.${extension}`);
-  },
-});
+const multerStorage = multer.memoryStorage();
 
-function fileFilter(req, file, cb) {
+const mutlerFilter = (req, file, cb) => {
   if (file.mimetype.startsWith("image")) {
     cb(null, true);
   } else {
-    cb(new Error("Not an Image", 400), false);
+    cb(new AppError("Not an Image, please upload only images", 400), false);
   }
-}
+};
 
-const upload = multer({ storage: multerStorage, fileFilter: fileFilter });
-const uploadSingleImage = upload.single("image");
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: mutlerFilter,
+});
 
-router.post("/", (req, res) => {
-  uploadSingleImage(req, res, function (err) {
-    if (err) {
-      return res.status(400).send({ message: err.message });
-    }
+// export const uploadProductImage = upload.fields([
+//   { name: "image", maxCount: 1 },
+//   { name: "otherImages", maxCount: 6 },
+// ]);
 
-    res.status(200).send({
-      message: "Image uploaded successfully",
-      image: `/${req.file.path}`,
-    });
+export const resizeOneImage = asyncHandler(async (req, res, next) => {
+  console.log("RESIZING");
+
+  if (!req.file) {
+    return next();
+  }
+
+  const imageFilename = `${fileNameProvider(
+    req.file.originalname
+  )}-MainImg-$-${Date.now()}-image.jpeg`;
+
+  await sharp(req.file.buffer)
+    .resize(2000, 1333)
+    .toFormat("jpeg")
+    .jpeg({ quality: 90 })
+    .toFile(`uploads/${imageFilename}`);
+
+  req.body.image = `uploads/${imageFilename}`;
+  next();
+});
+
+router.post("/", upload.single("image"), resizeOneImage, (req, res) => {
+  console.log(req.file);
+  res.send({
+    message: "Image Uploaded Successfully",
+    image: `/${req.file.path}`,
+    image: `/${req.body.image}`,
   });
 });
 
 export default router;
 
-// export function resizeImage(req, res, next) {
-//   console.log(req.file);
-//   if (!req.file) return next();
-//   console.log(req.body);
-//   req.file.filename = `Photo-${Date.now()}.jpeg`;
+// export const resizeProductimages = asyncHandler(async (req, res, next) => {
+//   console.log("RESIZING");
 
-//   sharp(req.file.buffer)
-//     .resize(500, 500)
+//   if (!req.files.image || !req.files.otherImages) {
+//     return next();
+//   }
+
+//   const imageFilename = `product-MainImg-${
+//     req.params.id
+//   }-${Date.now()}-image.jpeg`;
+
+//   await sharp(req.files.image[0].buffer)
+//     .resize(2000, 1333)
 //     .toFormat("jpeg")
 //     .jpeg({ quality: 90 })
-//     .toFile(`uploads/${req.file.filename}`);
+//     .toFile(`uploads/${imageFilename}`);
 
-//   console.log(req.file.buffer);
+//   req.body.image = `uploads/${imageFilename}`;
 
-//   next();
-// }
+//   req.body.otherImages = [];
+//   // console.log(req.body.otherImages);
+//   await Promise.all(
+//     req.files.otherImages.map(async (file, index) => {
+//       const filename = `${file.originalname}-${
+//         req.params.id
+//       }-${Date.now()}-image${index + 1}.jpeg`;
+//       console.log(index, " and  ", file);
 
-export async function resizeImage(req, res, next) {
-  console.log(req.file);
-  if (!req.file) return next();
-  console.log(req.body);
-  req.file.filename = `Photo-${Date.now()}.jpeg`;
+//       await sharp(file.buffer)
+//         .resize(500, 500)
+//         .toFormat("jpeg")
+//         .jpeg({ quality: 90 })
+//         .toFile(`uploads/${filename}`);
 
-  await sharp(req.file.buffer)
-    .resize(500, 500)
-    .toFormat("jpeg")
-    .jpeg({ quality: 90 })
-    .toBuffer((err, buffer) => {
-      if (err) {
-        console.error(err);
-        return res.status(500).send("Error processing the image");
-      }
-
-      const base64ImageData = buffer.toString("base64");
-      const dataUrl = `data:image/jpeg;base64,${base64ImageData}`;
-
-      // Send the data URL as a response
-      res.status(200).json({
-        message: "Image uploaded and processed successfully",
-        image: dataUrl,
-      });
-    });
-}
+//       req.body.otherImages.push(filename);
+//       console.log("LISTR = ", req.body.otherImages);
+//     })
+//   );
+// });

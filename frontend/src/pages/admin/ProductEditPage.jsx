@@ -65,7 +65,7 @@ const ProductEditPage = () => {
       stockNumber,
       price,
     };
-    console.log(updateProduct);
+
     const result = await updateProduct(updatedProduct);
     if (result.error) {
       toast.error(result.error);
@@ -79,7 +79,7 @@ const ProductEditPage = () => {
     const formData = new FormData();
     formData.append("image", e.target.files[0]);
     try {
-      const res = await updateProduct(formData).unwrap();
+      const res = await uploadProductImage(formData).unwrap();
       toast.success(res.message);
       setImage(res.image);
     } catch (error) {

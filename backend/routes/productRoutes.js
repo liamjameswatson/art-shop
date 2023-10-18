@@ -27,7 +27,7 @@ router
   .route("/:id")
   .get(getProductById)
   // .put(protect, protectAdmin, updateProduct);
-  .put(protect, uploadProductImage, resizeProductimages, updateProduct)
+  .put(protect, restrictTo("admin"), updateProduct)
   // .delete(protect, protectAdmin, deleteProduct);
   .delete(protect, deleteProduct);
 

@@ -1,10 +1,16 @@
 //This function takes in the name of file, and returns it without the extension. 'myfile.jpg' will return as 'myfile'
 
 function fileNameProvider(name) {
-  const splitName = name.split(".");
-  splitName.pop();
-  const splitNameJoin = splitName.join(".");
-  return splitNameJoin;
+  return name
+    .split(".")
+    .slice(0, -1)
+    .join(".")
+    .trim()
+    .replaceAll(/\s+/g, "-")
+    .toLowerCase();
 }
 
+
 export default fileNameProvider;
+
+

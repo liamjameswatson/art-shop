@@ -120,26 +120,17 @@ const createProduct = asyncHandler(async (req, res) => {
 // @access Private/Admin
 
 const updateProduct = asyncHandler(async (req, res) => {
-  const {
-    name,
-    price,
-    description,
-    image,
-    otherImages,
-    category,
-    stockNumber,
-  } = req.body;
+  const updateData = req.body; // Expect an object with properties to update
 
   const product = await Product.findById(req.params.id);
 
   if (product) {
-    product.name = name;
-    product.price = price;
-    product.description = description;
-    product.image = image;
-    product.otherImages = otherImages;
-    product.category = category;
-    product.stockNumber = stockNumber;
+    // Update only the properties that are provided in the request
+    for (const key in updateData) {
+      if (key in product) {
+        product[key] = updateData[key];
+      }
+    }
 
     const updatedProduct = await product.save();
     res.json(updatedProduct);
@@ -148,7 +139,6 @@ const updateProduct = asyncHandler(async (req, res) => {
     throw new Error("Product not found");
   }
 });
-
 // @desc   Delete a products
 // @route  DELETE /api/products/:id
 // @access Private/Admin
