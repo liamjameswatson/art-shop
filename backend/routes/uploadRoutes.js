@@ -59,44 +59,46 @@ router.post("/", upload.single("image"), resizeOneImage, (req, res) => {
   });
 });
 
+export const resizeMultiImages = asyncHandler(async (req, res, next) => {
+  console.log("RESIZING MULTI");
+
+  if (!req.files) {
+    return next();
+  }
+
+  const otherImages = [];
+  // console.log(req.body.otherImages);
+  await Promise.all(
+    req.files.map(async (file, index) => {
+      const imageFilename = `${
+        file.originalname
+      }-otherImage-$-${Date.now()}-image.jpeg`;
+
+      await sharp(file.buffer)
+        .resize(500, 500)
+        .toFormat("jpeg")
+        .jpeg({ quality: 90 })
+        .toFile(`uploads/${imageFilename}`);
+
+      otherImages.push(imageFilename);
+      console.log("LISTR = ", otherImages);
+    })
+  );
+  next();
+});
+
+router.post(
+  "/multi",
+  upload.array("otherImages", 6),
+  resizeMultiImages,
+  (req, res, error) => {
+    console.log(req.files);
+    res.send({
+      message: "Image Uploaded Successfully",
+      image: `/${req.files.path}`,
+      // image: `/${req.body.image}`,
+    });
+  }
+);
+
 export default router;
-
-// export const resizeProductimages = asyncHandler(async (req, res, next) => {
-//   console.log("RESIZING");
-
-//   if (!req.files.image || !req.files.otherImages) {
-//     return next();
-//   }
-
-//   const imageFilename = `product-MainImg-${
-//     req.params.id
-//   }-${Date.now()}-image.jpeg`;
-
-//   await sharp(req.files.image[0].buffer)
-//     .resize(2000, 1333)
-//     .toFormat("jpeg")
-//     .jpeg({ quality: 90 })
-//     .toFile(`uploads/${imageFilename}`);
-
-//   req.body.image = `uploads/${imageFilename}`;
-
-//   req.body.otherImages = [];
-//   // console.log(req.body.otherImages);
-//   await Promise.all(
-//     req.files.otherImages.map(async (file, index) => {
-//       const filename = `${file.originalname}-${
-//         req.params.id
-//       }-${Date.now()}-image${index + 1}.jpeg`;
-//       console.log(index, " and  ", file);
-
-//       await sharp(file.buffer)
-//         .resize(500, 500)
-//         .toFormat("jpeg")
-//         .jpeg({ quality: 90 })
-//         .toFile(`uploads/${filename}`);
-
-//       req.body.otherImages.push(filename);
-//       console.log("LISTR = ", req.body.otherImages);
-//     })
-//   );
-// });

@@ -60,7 +60,7 @@ const ProductPage = () => {
         <>
           <Row>
             <Col md={5}>
-              <Image src={`/${product.image}`} alt={product.name} fluid></Image>
+              <Image src={`${product.image}`} alt={product.name} fluid></Image>
               {otherImages.map((image, index) => (
                 <Image
                   key={index}

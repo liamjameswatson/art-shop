@@ -11,6 +11,7 @@ import {
   useUpdateProductMutation,
   useGetProductDetailsQuery,
   useUploadProductImageMutation,
+  useUploadMultipleProductImagesMutation,
 } from "../../slices/productsApiSlice";
 
 const ProductEditPage = () => {
@@ -26,8 +27,6 @@ const ProductEditPage = () => {
   const [price, setPrice] = useState(0);
   const [stockNumber, setStockNumber] = useState(0);
 
-  console.log("other state =", otherImages);
-
   const {
     data: product,
     isLoading,
@@ -40,6 +39,9 @@ const ProductEditPage = () => {
 
   const [uploadProductImage, { isLoading: isUploading }] =
     useUploadProductImageMutation();
+
+  const [uploadOtherProductImages, { isLoading: isUploadingMulti }] =
+    useUploadMultipleProductImagesMutation();
 
   useEffect(() => {
     if (product) {
@@ -76,6 +78,7 @@ const ProductEditPage = () => {
   };
 
   const handleUploadFile = async (e) => {
+    e.preventDefault();
     const formData = new FormData();
     formData.append("image", e.target.files[0]);
     try {
@@ -89,15 +92,17 @@ const ProductEditPage = () => {
   };
 
   const handleUploadFiles = async (e) => {
+    e.preventDefault();
     const formData = new FormData();
     for (let i = 0; i < e.target.files.length; i++) {
       formData.append("otherImages", e.target.files[i]);
     }
 
     try {
-      const res = await updateProduct(formData).unwrap();
+      const res = await uploadOtherProductImages(formData).unwrap();
       toast.success(res.message);
       setOtherImages([...otherImages]);
+      console.log(res);
     } catch (error) {
       toast.error(error?.data?.message || error.error);
       console.log(error);
@@ -173,7 +178,7 @@ const ProductEditPage = () => {
                 onChange={handleUploadFiles}
                 multiple
               ></Form.Control>
-              {isUploading && <Spinner />}
+              {isUploadingMulti && <Spinner />}
             </FormGroup>
             {/* ////////////////////////////////////////// */}
             <Form.Group className="my-2" controlId="category">

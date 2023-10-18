@@ -32,15 +32,15 @@ export const resizeProductimages = asyncHandler(async (req, res, next) => {
     return next();
   }
 
-  console.log("req.files.image = ", req.files.image);
-  console.log("req.files.otherImages = ", req.files.otherImages);
+  console.log("req.files = ", req.files);
+
   // Main Image
 
   const imageFilename = `product-MainImg-${
     req.params.id
   }-${Date.now()}-image.jpeg`;
 
-  await sharp(req.files.image[0].buffer)
+  await sharp(req.files.buffer)
     .resize(2000, 1333)
     .toFormat("jpeg")
     .jpeg({ quality: 90 })
