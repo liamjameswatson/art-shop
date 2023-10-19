@@ -1,6 +1,7 @@
 import { LinkContainer } from "react-router-bootstrap";
 import { Table, Button, Row, Col } from "react-bootstrap";
 import { FaTimes, FaEdit, FaTrash } from "react-icons/fa";
+import { useParams } from "react-router-dom";
 import Message from "../../ui/Message";
 import Spinner from "../../ui/Spinner";
 import {
@@ -10,17 +11,21 @@ import {
 } from "../../slices/productsApiSlice";
 
 import { toast } from "react-toastify";
+import Paginate from "../../ui/Paginate";
 
 const ProductListPage = () => {
-  const { data: products, isLoading, error, refetch } = useGetProductsQuery();
-  console.log(products);
-
+  const pageNumber = useParams();
+  const { data, isLoading, error, refetch } = useGetProductsQuery({
+    pageNumber,
+  });
   const [
     createProduct,
     { isLoading: loadingCreateProduct, error: createProductError },
   ] = useCreateProductMutation();
 
-  const [deleteProduct, { isLoading: isDeleting }] = useDeleteProductMutation();
+  const [deleteProduct, { isLoading: isDeleting }] = useDeleteProductMutation(
+    {}
+  );
 
   const handleDelete = async (id) => {
     if (window.confirm("Are you sure you want to delete?")) {
@@ -40,7 +45,6 @@ const ProductListPage = () => {
       try {
         await createProduct();
         refetch();
-        console.log(products);
       } catch (error) {
         toast.error(error?.data?.message || error.error);
       }
@@ -80,7 +84,7 @@ const ProductListPage = () => {
               </tr>
             </thead>
             <tbody>
-              {products.map((product) => (
+              {data.products.map((product) => (
                 <tr key={product._id}>
                   <td>{product._id}</td>
                   <td>{product.name}</td>
@@ -106,6 +110,7 @@ const ProductListPage = () => {
               ))}
             </tbody>
           </Table>
+          <Paginate pages={data.pages} page={data.page} isAdmin />
         </>
       )}
     </>
