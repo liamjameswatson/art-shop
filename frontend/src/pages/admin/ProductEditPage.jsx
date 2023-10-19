@@ -95,8 +95,8 @@ const ProductEditPage = () => {
   const handleUploadFiles = async (e) => {
     e.preventDefault();
     const formData = new FormData();
-    const newOtherImages = []; // Create an array to store file names
-    // console.log("newOtherImages ", newOtherImages);
+    const newOtherImages = [];
+   
 
     for (let i = 0; i < e.target.files.length; i++) {
       formData.append("otherImages", e.target.files[i]);
@@ -104,7 +104,7 @@ const ProductEditPage = () => {
     }
 
     console.log("formData ", formData);
-    console.log("newOtherImages", newOtherImages);
+    
     try {
       const res = await uploadOtherProductImages(formData).unwrap();
       toast.success(res.message);
@@ -168,7 +168,8 @@ const ProductEditPage = () => {
               {isUploading && <Spinner />}
             </FormGroup>
 
-            {/* ////////////////////////////////////////////////////// */}
+         
+         
             <FormGroup className="my-2" controlId="otherImages">
               <Form.Label>otherImages</Form.Label>
               <Form.Control
@@ -186,7 +187,8 @@ const ProductEditPage = () => {
               ></Form.Control>
               {isUploadingMulti && <Spinner />}
             </FormGroup>
-            {/* ////////////////////////////////////////// */}
+           
+           
             <Form.Group className="my-2" controlId="category">
               <Form.Label>Category</Form.Label>
               <Form.Control

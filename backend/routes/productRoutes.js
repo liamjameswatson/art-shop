@@ -6,8 +6,6 @@ import {
   createProduct,
   updateProduct,
   deleteProduct,
-  uploadProductImage,
-  resizeProductimages,
 } from "../controllers/productController.js";
 
 // import { protect, protectAdmin } from "../middleware/authMiddleware.js";

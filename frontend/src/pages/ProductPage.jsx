@@ -129,7 +129,6 @@ const ProductPage = () => {
                                 </option>
                               )
                             )}
-                            {/* {console.log([...Array(product.stockNumber).keys()])} */}
                           </Form.Control>
                         </Col>
                       </Row>

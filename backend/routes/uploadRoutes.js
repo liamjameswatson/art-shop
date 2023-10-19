@@ -24,11 +24,6 @@ const upload = multer({
   fileFilter: mutlerFilter,
 });
 
-// export const uploadProductImage = upload.fields([
-//   { name: "image", maxCount: 1 },
-//   { name: "otherImages", maxCount: 6 },
-// ]);
-
 export const resizeOneImage = asyncHandler(async (req, res, next) => {
   console.log("RESIZING");
 
