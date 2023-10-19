@@ -67,37 +67,3 @@ const restrictTo = (...roles) => {
 };
 
 export { protect, restrictTo };
-
-// // Protect User Routes
-// const protect = asyncHandler(async (req, res, next) => {
-//   let token;
-
-//   // Read the JWT from the cookie
-//   token = req.cookies.jwt;
-
-//   if (token) {
-//     try {
-//       const decoded = jwt.verify(token, process.env.JWT_SECRET); //decoded becomes an object with a userId field
-//       // console.log(decoded);
-//       req.user = await User.findById(decoded.userId).select("-password"); // returns user without the password
-//       next();
-//
-
-//     throw new Error("Not authorized, no token");
-//   }
-// });
-
-//Protect Admin Routes
-// const protectAdmin = asyncHandler(async (req, res, next) => {
-//   if (req.user && req.user.role === "admin") {
-//     console.log("ROLE...", req.user.role);
-//     next();
-//   } else {
-//     res.status(401);
-//     throw new Error(
-//       "Not authorized, you are not authorized to access this route"
-//     );
-//   }
-// });
-
-// export { protectAdmin, protect };

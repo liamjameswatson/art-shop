@@ -1,5 +1,6 @@
 import asyncHandler from "../middleware/asyncHandler.js";
 import Product from "../models/productModel.js";
+import { AppError } from "../utils/appError.js";
 
 // @desc Fetch all products
 // @route GET /api/products
@@ -17,6 +18,7 @@ const getProductById = asyncHandler(async (req, res) => {
   const product = await Product.findById(req.params.id);
 
   if (product) {
+    // console.log(product);
     return res.json(product);
   } else {
     // use errorHandler
@@ -26,13 +28,14 @@ const getProductById = asyncHandler(async (req, res) => {
 });
 
 // @desc Create a product
-// @route POST /api/products:id
+// @route POST /api/products
 // @access Private/ Admin
 const createProduct = asyncHandler(async (req, res) => {
   const product = new Product({
     name: "Sample name",
     description: "Sample description",
     image: "/images/sample.jpg",
+    otherImages: ["/images/sample.jpg", "/images/sample.jpg"],
     category: "sample category",
     price: 0,
     stockNumber: 0,
@@ -48,17 +51,17 @@ const createProduct = asyncHandler(async (req, res) => {
 // @access Private/Admin
 
 const updateProduct = asyncHandler(async (req, res) => {
-  const { name, price, description, image, category, stockNumber } = req.body;
+  const updateData = req.body; // Expect an object with properties to update
 
   const product = await Product.findById(req.params.id);
 
   if (product) {
-    product.name = name;
-    product.price = price;
-    product.description = description;
-    product.image = image;
-    product.category = category;
-    product.stockNumber = stockNumber;
+    // Update only the properties that are provided in the request
+    for (const key in updateData) {
+      if (key in product) {
+        product[key] = updateData[key];
+      }
+    }
 
     const updatedProduct = await product.save();
     res.json(updatedProduct);
@@ -67,7 +70,6 @@ const updateProduct = asyncHandler(async (req, res) => {
     throw new Error("Product not found");
   }
 });
-
 // @desc   Delete a products
 // @route  DELETE /api/products/:id
 // @access Private/Admin

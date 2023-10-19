@@ -1,6 +1,9 @@
-import path, { dirname } from "path";
+import path from "path";
 import express from "express";
 import dotenv from "dotenv";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+
 dotenv.config();
 
 import cookieParser from "cookie-parser";
@@ -58,7 +61,8 @@ app.get("/api/config/paypal", (req, res) =>
 
 const __dirname = path.resolve(); //Set __dirname to current directory
 
-app.use("uploads", express.static(path.join(__dirname, "/uploads")));
+// app.use("/uploads", express.static(path.resolve(__dirname, "..", "uploads")));
+app.use("/uploads", express.static(path.join(__dirname, "/uploads")));
 
 // If in production
 if (process.env.NODE_ENV === "production") {

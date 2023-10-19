@@ -1,49 +1,99 @@
 import path from "path";
 import express from "express";
 import multer from "multer";
+import sharp from "sharp";
+import asyncHandler from "../middleware/asyncHandler.js";
+import fileNameProvider from "../utils/fileNameProvider.js";
+
+import { AppError } from "../utils/appError.js";
 
 const router = express.Router();
 
-const storage = multer.diskStorage({
-  destination(req, file, cb) {
-    cb(null, "../uploads");
-  },
-  filename(req, file, cb) {
-    cb(
-      null,
-      `${file.fieldname}-${Date.now()}${path.extname(file.originalname)}`
-    );
-  },
-});
+const multerStorage = multer.memoryStorage();
 
-function fileFilter(req, file, cb) {
-  const filetypes = /jpeg|png|webp/;
-  const mimetypes = /image\/jpeg|image\/png|image\/webp/;
-
-  const extname = filetypes.test(path.extname(file.originalname).toLowerCase());
-  const mimetype = mimetypes.test(file.mimetype);
-
-  if (extname && mimetype) {
+const mutlerFilter = (req, file, cb) => {
+  if (file.mimetype.startsWith("image")) {
     cb(null, true);
   } else {
-    cb(new Error("Images only!"), false);
+    cb(new AppError("Not an Image, please upload only images", 400), false);
   }
-}
+};
 
-const upload = multer({ storage, fileFilter });
-const uploadSingleImage = upload.single("image");
+const upload = multer({
+  storage: multerStorage,
+  fileFilter: mutlerFilter,
+});
 
-router.post("/", (req, res) => {
-  uploadSingleImage(req, res, function (err) {
-    if (err) {
-      return res.status(400).send({ message: err.message });
-    }
+export const resizeOneImage = asyncHandler(async (req, res, next) => {
+  console.log("RESIZING");
 
-    res.status(200).send({
-      message: "Image uploaded successfully",
-      image: `/${req.file.path}`,
-    });
+  if (!req.file) {
+    return next();
+  }
+
+  const imageFilename = `${fileNameProvider(
+    req.file.originalname
+  )}-MainImg-$-${Date.now()}-image.jpeg`;
+
+  await sharp(req.file.buffer)
+    .resize(2000, 1333)
+    .toFormat("jpeg")
+    .jpeg({ quality: 90 })
+    .toFile(`uploads/${imageFilename}`);
+
+  req.body.image = `uploads/${imageFilename}`;
+  next();
+});
+
+router.post("/", upload.single("image"), resizeOneImage, (req, res) => {
+  console.log(req.file);
+  res.send({
+    message: "Image Uploaded Successfully",
+    image: `/${req.file.path}`,
+    image: `/${req.body.image}`,
   });
 });
+
+export const resizeMultiImages = asyncHandler(async (req, res, next) => {
+  console.log("RESIZING MULTI");
+
+  if (!req.files) {
+    return next();
+  }
+
+  const otherImages = [];
+  // console.log(req.body.otherImages);
+  await Promise.all(
+    req.files.map(async (file, index) => {
+      const imageFilename = `${
+        file.originalname
+      }-otherImage-$-${Date.now()}-image.jpeg`;
+
+      await sharp(file.buffer)
+        .resize(500, 500)
+        .toFormat("jpeg")
+        .jpeg({ quality: 90 })
+        .toFile(`uploads/${imageFilename}`);
+
+      otherImages.push(`uploads/${imageFilename}`);
+
+      req.body.images = otherImages;
+    })
+  );
+  next();
+});
+
+router.post(
+  "/multi",
+  upload.array("otherImages", 6),
+  resizeMultiImages,
+  (req, res) => {
+    console.log("These are the the files", req.files);
+    res.send({
+      message: "Good day?         ......Image Uploaded Successfully",
+      images: req.body.images,
+    });
+  }
+);
 
 export default router;

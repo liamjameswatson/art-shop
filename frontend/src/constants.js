@@ -6,3 +6,15 @@ export const USERS_URL = "/api/users";
 export const ORDERS_URL = "/api/orders";
 export const UPLOADS_URL = "/api/uploads";
 export const PAYPAL_URL = "/api/config/paypal";
+
+// const name = "fourth.jgp";
+// const splitName = name.split(".");
+// splitName.pop();
+// const splitNameJoin = splitName.join(".");
+// // const splitNamejoin = splitNamePop.join('')
+
+// console.log(name);
+// console.log(splitName);
+// console.log(splitNameJoin);
+
+// // console.log(splitNamejoin)
