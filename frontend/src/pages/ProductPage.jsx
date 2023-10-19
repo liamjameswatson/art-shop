@@ -64,7 +64,7 @@ const ProductPage = () => {
               {otherImages.map((image, index) => (
                 <Image
                   key={index}
-                  src={`/uploads/${image}`}
+                  src={`/${image}`}
                   alt={product.name}
                   fluid
                 ></Image>

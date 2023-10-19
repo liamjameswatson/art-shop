@@ -91,18 +91,24 @@ const ProductEditPage = () => {
     }
   };
 
+  // Assuming you want to store the file names in an array
   const handleUploadFiles = async (e) => {
     e.preventDefault();
     const formData = new FormData();
+    const newOtherImages = []; // Create an array to store file names
+    // console.log("newOtherImages ", newOtherImages);
+
     for (let i = 0; i < e.target.files.length; i++) {
       formData.append("otherImages", e.target.files[i]);
+      newOtherImages.push(e.target.files[i].name); // Store file names
     }
 
+    console.log("formData ", formData);
+    console.log("newOtherImages", newOtherImages);
     try {
       const res = await uploadOtherProductImages(formData).unwrap();
       toast.success(res.message);
-      setOtherImages([...otherImages]);
-      console.log(res);
+      setOtherImages(res.images); // Update the state with file names
     } catch (error) {
       toast.error(error?.data?.message || error.error);
       console.log(error);

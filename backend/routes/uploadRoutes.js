@@ -80,8 +80,9 @@ export const resizeMultiImages = asyncHandler(async (req, res, next) => {
         .jpeg({ quality: 90 })
         .toFile(`uploads/${imageFilename}`);
 
-      otherImages.push(imageFilename);
-      console.log("LISTR = ", otherImages);
+      otherImages.push(`uploads/${imageFilename}`);
+
+      req.body.images = otherImages;
     })
   );
   next();
@@ -91,12 +92,11 @@ router.post(
   "/multi",
   upload.array("otherImages", 6),
   resizeMultiImages,
-  (req, res, error) => {
-    console.log(req.files);
+  (req, res) => {
+    console.log("These are the the files", req.files);
     res.send({
-      message: "Image Uploaded Successfully",
-      image: `/${req.files.path}`,
-      // image: `/${req.body.image}`,
+      message: "Good day?         ......Image Uploaded Successfully",
+      images: req.body.images,
     });
   }
 );
