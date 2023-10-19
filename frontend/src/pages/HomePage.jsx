@@ -2,15 +2,19 @@ import Product from "../ui/Product";
 import { Row, Col } from "react-bootstrap";
 import { useGetProductsQuery } from "../slices/productsApiSlice";
 
+import Paginate from "../ui/Paginate";
 import Spinner from "../ui/Spinner";
 import Message from "../ui/Message";
+import { useParams } from "react-router-dom";
 
 const HomePage = () => {
-  const { data: products, isLoading, error } = useGetProductsQuery();
-  console.log(products);
+  const { pageNumber } = useParams();
 
-  // const imageFileName = "liasm.jpeg"; // Replace with your actual image file name
-  // const imageUrl = `../uploads/${imageFileName}`;
+  const { keyword } = useParams();
+  const { data, isLoading, error } = useGetProductsQuery({
+    keyword,
+    pageNumber,
+  });
 
   return (
     <>
@@ -24,13 +28,13 @@ const HomePage = () => {
         <>
           <h1>Products</h1>
           <Row>
-            {products.map((product, index) => (
+            {data.products.map((product, index) => (
               <Col key={index} sm={12} md={6} lg={4} xl={3}>
                 <Product product={product} />
               </Col>
             ))}
-          </Row>{" "}
-          {/* <img src={imageUrl} alt="Art Shop Image" /> */}
+          </Row>
+          <Paginate pages={data.pages} page={data.page} />
         </>
       )}
     </>

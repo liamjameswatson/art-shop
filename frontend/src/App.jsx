@@ -28,6 +28,14 @@ const router = createBrowserRouter([
         element: <HomePage />,
       },
       {
+        path: "/page/:pageNumber",
+        element: <HomePage />,
+      },
+      {
+        path: "/search/:keyword",
+        element: <HomePage />,
+      },
+      {
         path: "/product/:id",
         element: <ProductPage />,
       },
@@ -81,6 +89,10 @@ const router = createBrowserRouter([
           },
           {
             path: "admin/productlist",
+            element: <ProductListPage />,
+          },
+          {
+            path: "admin/productlist/:pageNumber",
             element: <ProductListPage />,
           },
           {
