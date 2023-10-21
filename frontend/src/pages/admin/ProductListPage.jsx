@@ -110,7 +110,7 @@ const ProductListPage = () => {
               ))}
             </tbody>
           </Table>
-          <Paginate pages={data.pages} page={data.page} isAdmin />
+          <Paginate pages={data.pages} page={data.page} isAdmin={true} />
         </>
       )}
     </>

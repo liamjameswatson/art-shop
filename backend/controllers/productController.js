@@ -7,15 +7,15 @@ import { AppError } from "../utils/appError.js";
 // @access Public
 
 const getProducts = asyncHandler(async (req, res) => {
-  const pageSize = 4;
+  const pageSize = 100;
   const page = Number(req.query.pageNumber) || 1;
   const count = await Product.countDocuments();
 
-  const keyword = req.query.keyword
-    ? { name: { $regex: req.query.keyword, $options: "i" } }
+  const searchTerm = req.query.searchTerm
+    ? { name: { $regex: req.query.searchTerm, $options: "i" } }
     : {};
 
-  const products = await Product.find({ ...keyword })
+  const products = await Product.find({ ...searchTerm })
     .limit(pageSize)
     .skip(pageSize * (page - 1));
 
