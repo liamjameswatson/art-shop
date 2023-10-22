@@ -11,7 +11,7 @@ import {
 
 const UserListPage = () => {
   const { data: users, refetch, isLoading, error } = useGetUsersQuery();
-  // console.log(orders);
+  // console.log("users", users.data.users);
 
   const [deleteUser, { isLoading: isDeleting }] = useDeleteUserMutation();
 
@@ -45,7 +45,7 @@ const UserListPage = () => {
             </tr>
           </thead>
           <tbody>
-            {users.map((user) => (
+            {users.data.users.map((user) => (
               <tr key={user._id}>
                 <td>{user._id}</td>
                 <td>{user.name}</td>
