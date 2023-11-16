@@ -1,8 +1,3 @@
-import { useState } from "react";
-import { useParams, useNavigate } from "react-router-dom";
-
-import { useGetProductDetailsQuery } from "../slices/productsApiSlice";
-
 import { Link } from "react-router-dom";
 import {
   Row,
@@ -14,36 +9,35 @@ import {
   Form,
 } from "react-bootstrap";
 
-import { useDispatch } from "react-redux";
-
 import Spinner from "../ui/Spinner";
 import Message from "../ui/Message";
 
-import { addToCart } from "../slices/cartSlice";
+import { useProduct } from "../productHooks/useProduct";
+
+import { useLocation, useNavigate } from "react-router-dom";
+import { useState } from "react";
+
+import { useDispatch } from "react-redux";
+import { addProductToBasket } from "../redux/basketSlice";
 
 const ProductPage = () => {
-  // get id from params
-  const { id: productId } = useParams();
+  const [quantity, setQuantity] = useState(1);
+  const navigate = useNavigate();
+  const location = useLocation();
+
+  const productId = location.pathname.split("/")[2];
+  const { data, isLoading, error } = useProduct(productId);
 
   const dispatch = useDispatch();
-  const navigate = useNavigate();
 
-  const [quantity, setQuantity] = useState(1);
+  const product = data?.product;
 
-  const {
-    data: product,
-    isLoading,
-    error,
-  } = useGetProductDetailsQuery(productId);
-
-  const otherImages = product?.otherImages;
-  // console.log(otherImages);
-
-  const handleAddToCart = () => {
-    // send product and quantity to cart
-    dispatch(addToCart({ ...product, quantity }));
+  const handleAddToBasket = (product, quantity) => {
+    console.log({ product, quantity });
+    dispatch(addProductToBasket({ ...product, quantity }));
     navigate("/cart");
   };
+
   return (
     <>
       <Link className="btn btn-light my-3" to="/">
@@ -61,7 +55,7 @@ const ProductPage = () => {
           <Row>
             <Col md={5}>
               <Image src={`${product.image}`} alt={product.name} fluid></Image>
-              {otherImages.map((image, index) => (
+              {product?.otherImages.map((image, index) => (
                 <Image
                   key={index}
                   src={`/${image}`}
@@ -136,11 +130,12 @@ const ProductPage = () => {
                   )}
 
                   <ListGroup.Item>
+                    {}
                     <Button
                       className="btn-primary"
                       type="button"
                       disabled={product.stockNumber === 0}
-                      onClick={handleAddToCart}
+                      onClick={() => handleAddToBasket(product, quantity)}
                     >
                       Add to basket
                     </Button>

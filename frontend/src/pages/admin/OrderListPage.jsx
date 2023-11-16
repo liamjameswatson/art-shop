@@ -3,11 +3,14 @@ import { Table, Button } from "react-bootstrap";
 import { FaTimes } from "react-icons/fa";
 import Message from "../../ui/Message";
 import Spinner from "../../ui/Spinner";
-import { useGetOrdersQuery } from "../../slices/ordersApiSlice";
+// import { useGetOrdersQuery } from "../../slices/ordersApiSlice";
+import { useAllOrders } from "../../orderhooks/useAllOrders";
 
 const OrderListPage = () => {
-  const { data: orders, isLoading, error } = useGetOrdersQuery();
-  // console.log(orders);
+  // const { data: orders, isLoading, error } = useGetOrdersQuery();
+
+  const { data: orders, isLoading, error } = useAllOrders();
+
   return (
     <>
       <h1>Orders</h1>

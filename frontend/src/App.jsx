@@ -17,6 +17,8 @@ import ProductListPage from "./pages/admin/ProductListPage";
 import ProductEditPage from "./pages/admin/ProductEditPage";
 import UserListPage from "./pages/admin/UserListPage";
 import UserEditPage from "./pages/admin/UserEditPage";
+import SuccessPage from "./pages/SuccessPage";
+import PageNotFound from "./pages/PageNotFound";
 
 const router = createBrowserRouter([
   {
@@ -80,6 +82,10 @@ const router = createBrowserRouter([
             path: "profile",
             element: <ProfilePage />,
           },
+          {
+            path: "checkout-success",
+            element: <SuccessPage />,
+          },
         ],
       },
       // ADMIN ONLY
@@ -111,7 +117,15 @@ const router = createBrowserRouter([
             path: "admin/user/:id/edit",
             element: <UserEditPage />,
           },
+          {
+            path: "*",
+            element: <PageNotFound />,
+          },
         ],
+      },
+      {
+        path: "*",
+        element: <PageNotFound />,
       },
     ],
   },

@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
 import { Form, Button, Row, Col } from "react-bootstrap";
 import FormContainer from "../ui/FormContainer";
 import Spinner from "../ui/Spinner";
@@ -8,18 +7,27 @@ import { useRegisterMutation } from "../slices/usersApiSlice";
 import { setCredentials } from "../slices/authSlice";
 import { toast } from "react-toastify";
 
-const RegisterPage = () => {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+import FormRow from "../ui/FormRow";
+import Input from "../ui/Input";
+import { useForm } from "react-hook-form";
+// import { useCreateUser } from "../userHooks/useCreateUser";
 
-  const dispatch = useDispatch();
+import { useCreateUser } from "../userHooks/useCreateUser";
+
+import { useUser } from "../userHooks/useUser";
+
+const RegisterPage = () => {
+  const { register, handleSubmit, reset, formState, getValues } = useForm();
+  const { errors } = formState;
+
+  const { user, isLoading } = useUser();
+  console.log(user);
+
+  const { createUser, isCreating } = useCreateUser();
+
   const navigate = useNavigate();
 
-  const [register, { isLoading, error }] = useRegisterMutation();
-
-  const { userInfo } = useSelector((state) => state.auth);
+  // Check if user is defined before using it
 
   // check to see if 'redirect' has been set in the URL
   const { search } = useLocation(); // get search
@@ -27,84 +35,90 @@ const RegisterPage = () => {
   const redirect = searchParams.get("redirect") || "/"; // pass 'redirect' to searchParams or '/'
 
   useEffect(() => {
-    if (userInfo) {
-      // if there is user info in local storage or in state
+    if (user) {
+      // if there is user info in in state
       navigate(redirect);
     }
-  }, [userInfo, redirect, navigate]);
+  }, [user, redirect, navigate]);
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  async function onSubmit(data) {
+    console.log(data);
+  }
 
-    if (password !== confirmPassword) {
-      toast.error("Passwords do not match");
-    } else {
-      try {
-        // call login mutation, passing in email and password and unwrap the promise
-        const response = await register({ name, email, password }).unwrap();
-        // send the response from login to setCredentials
-        dispatch(setCredentials({ ...response }));
-        navigate(redirect);
-      } catch (error) {
-        toast.error(error?.data?.message || error.error);
-      }
-    }
-  };
+  function onError(errors) {
+    console.log(errors);
+  }
+
   return (
     <FormContainer>
       <h1>Sign Up</h1>
 
-      <Form onSubmit={handleSubmit}>
-        <Form.Group className="my-3" controlId="email">
-          <Form.Label>Name</Form.Label>
-          <Form.Control
+      <Form onSubmit={handleSubmit(onSubmit, onError)}>
+        <FormRow label="Name" error={errors?.name?.message}>
+          <Input
             type="text"
-            placeholder="Enter Name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-          ></Form.Control>
-        </Form.Group>
+            id="name"
+            {...register("name", {
+              required: "A user needs a name",
+            })}
+          ></Input>
+        </FormRow>
 
-        <Form.Group className="my-3" controlId="email">
-          <Form.Label>Email Address</Form.Label>
-          <Form.Control
+        <FormRow label="Email" error={errors?.email?.message}>
+          <Input
+            id="email"
             type="email"
-            placeholder="Enter email"
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          ></Form.Control>
-        </Form.Group>
+            {...register("email", {
+              required: "A user needs an email address",
+              pattern: {
+                value: /\S+@\S+\.\S+/,
+                message: "Please provide a valid email address",
+              },
+            })}
+          ></Input>
+        </FormRow>
 
-        <Form.Group className="my-3" controlId="password">
-          <Form.Label>Password</Form.Label>
-          <Form.Control
+        <FormRow label="Password" error={errors?.password?.message}>
+          <Input
+            id="password"
             type="password"
             placeholder="Enter password"
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          ></Form.Control>
-        </Form.Group>
+            {...register("password", {
+              required: "A user needs a password",
+              minLength: {
+                value: 8,
+                message: "Passwords must be at least 8 characters long",
+              },
+            })}
+          ></Input>
+        </FormRow>
 
-        <Form.Group className="my-3" controlId="confirmPassword">
-          <Form.Label>Confirm Password</Form.Label>
-          <Form.Control
+        <FormRow
+          label="Password Confirm"
+          error={errors?.passwordConfirm?.message}
+        >
+          <Input
+            id="passwordConifrm"
             type="password"
             placeholder="Confirm password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-          ></Form.Control>
-        </Form.Group>
+            {...register("passwordConfirm", {
+              required: "Passwords do not match",
+              validate: (value) =>
+                value === getValues().password || "Passwords do not match",
+            })}
+          ></Input>
+        </FormRow>
 
         <Button
           type="submit"
           variant="primary"
           className="mt-2"
-          disabled={isLoading}
+          disabled={isCreating}
         >
           Sign Up
         </Button>
 
-        {isLoading && <Spinner />}
+        {isCreating && <Spinner />}
       </Form>
 
       <Row className="py-3">

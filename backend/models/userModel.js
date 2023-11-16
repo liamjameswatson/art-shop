@@ -41,6 +41,11 @@ const userSchema = new mongoose.Schema(
       enum: ["user", "admin"],
       default: "user",
     },
+    active: {
+      type: Boolean,
+      default: true,
+      select: false,
+    },
     passwordChangedAt: Date,
     passwordResetToken: String,
     passwordResetExpiresAt: Date,
@@ -103,6 +108,14 @@ userSchema.methods.createPasswordResetToken = function () {
   this.passwordResetExpiresAt = Date.now() + 10 * 60 * 1000; //now + 10 mins
   return resetToken;
 };
+
+// Don't send deleted users    // if query starts with 'find'        $ne: false === not equal false
+userSchema.pre(/^find/, function (next) {
+  if (!this.excludeInactive) {
+    this.find({ active: { $ne: false } });
+  }
+  next();
+});
 
 const User = mongoose.model("User", userSchema);
 

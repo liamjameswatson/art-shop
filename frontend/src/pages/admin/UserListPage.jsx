@@ -4,26 +4,29 @@ import { FaTimes, FaTrash, FaEdit, FaCheck } from "react-icons/fa";
 import Message from "../../ui/Message";
 import Spinner from "../../ui/Spinner";
 import { toast } from "react-toastify";
-import {
-  useGetUsersQuery,
-  useDeleteUserMutation,
-} from "../../slices/usersApiSlice";
+import { useAllUsers } from "../../userHooks/useAllUsers";
+import { useDeleteUser } from "../../userHooks/useDeleteUser";
+
+// import {
+//   useGetUsersQuery,
+//   useDeleteUserMutation,
+// } from "../../slices/usersApiSlice";
 
 const UserListPage = () => {
-  const { data: users, refetch, isLoading, error } = useGetUsersQuery();
+  // const { data: users, refetch, isLoading, error } = useGetUsersQuery();
   // console.log("users", users.data.users);
 
-  const [deleteUser, { isLoading: isDeleting }] = useDeleteUserMutation();
+  const { isDeleting, deleteUser } = useDeleteUser();
+
+  // const [deleteUser, { isLoading: isDeleting }] = useDeleteUserMutation();
+
+  const { data: users, isLoading, error } = useAllUsers();
+  console.log("users ======= ", users);
 
   const handleDelete = async (id) => {
+    console.log("idtodelete ===== ", id);
     if (window.confirm("Are you sure you want to delete?")) {
-      try {
-        await deleteUser(id);
-        toast.success("User deleted successfully");
-        refetch();
-      } catch (error) {
-        toast.error(error?.data?.message || error.error);
-      }
+      deleteUser(id);
     }
   };
   return (
