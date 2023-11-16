@@ -12,6 +12,8 @@ import {
   deleteUser,
   forgotPassword,
   resetPassword,
+  getCurrentUser,
+  deleteCurrentUser,
 } from "../controllers/userController.js";
 
 import { protect, restrictTo } from "../middleware/authMiddleware.js";
@@ -25,17 +27,32 @@ router.route("/").get(protect, restrictTo("admin"), getUsers).post(signUpUser);
 // login user
 router.post("/login", loginUser);
 
+router
+  .route("/profile2")
+  .get(protect, getCurrentUser)
+  .put(protect, updateUserProfile)
+  .delete(protect, restrictTo("admin"), deleteUser);
+// router.route("/getCurrentAdminUser").get(
+//   protect,
+//   restrictTo("admin"),
+//   getCurrentAdminUser
+// );
+
 // logout user
-router.post("/logout", logoutUser);
+router.post("/logoutUser", logoutUser);
 
 router.post("/forgot-password", forgotPassword);
 router.put("/reset-password/:token", resetPassword);
 
+router.delete("/deleteMe", protect, deleteCurrentUser);
+
+// .delete(protect, protectAdmin, deleteUser);
+
 // get and update user profile (user route)
-router
-  .route("/profile")
-  .get(protect, getUserProfile)
-  .put(protect, updateUserProfile);
+// router
+//   .route("/profile2")
+//   .get(protect, getUserProfile)
+//   .put(protect, updateUserProfile);
 
 // get, update and delete user  (admin route)
 router
@@ -47,6 +64,6 @@ router
   .put(protect, updateUser)
 
   // .delete(protect, protectAdmin, deleteUser);
-  .delete(protect, deleteUser);
+  .delete(protect, restrictTo("admin"), deleteUser);
 
 export default router;

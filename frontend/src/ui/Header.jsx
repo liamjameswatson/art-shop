@@ -5,30 +5,33 @@ import { LinkContainer } from "react-router-bootstrap";
 import { useLogoutMutation } from "../slices/usersApiSlice";
 import logo from "../assets/images/logo/logo.png";
 
+import { useUser } from "../userHooks/useUser";
+
 import Searchbar from "./Searchbar";
 
 import { logout } from "../slices/authSlice";
 
 import { useSelector, useDispatch } from "react-redux";
+import { useLogout } from "../userHooks/useLogout";
 
 function Header() {
   // get the cart items from the cart
-  const { cartItems } = useSelector((state) => state.cart);
-  const { userInfo } = useSelector((state) => state.auth);
+
+  const { products: productsInBasket } = useSelector((state) => state.basket);
+
+  // const { userInfo } = useSelector((state) => state.auth);
+
+  const { user, isAdmin } = useUser();
 
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
-  const [logoutApiCall] = useLogoutMutation();
+  // const [logoutApiCall] = useLogoutMutation();
+  const { logout: logoutUser, isLoading } = useLogout();
 
-  const logoutHandler = async () => {
-    try {
-      await logoutApiCall().unwrap();
-      dispatch(logout());
-      navigate("/login");
-    } catch (error) {
-      console.log(error);
-    }
+  const logoutHandler = () => {
+    logoutUser();
+    dispatch(logout());
   };
 
   return (
@@ -51,17 +54,19 @@ function Header() {
               <LinkContainer to="/cart">
                 <Nav.Link>
                   <FaShoppingCart />
-                  Cart
-                  {cartItems.length > 0 && (
-                    <Badge pill bg="success" style={{ marginLeft: "7px" }}>
-                      {/* reducer func rather than .length to get quantity */}
-                      {cartItems.reduce((a, c) => a + c.quantity, 0)}
+                  Basket
+                  {productsInBasket.length > 0 && (
+                    <Badge pill bg="success" style={{ marginLeft: "5px" }}>
+                      {productsInBasket.reduce(
+                        (acc, product) => acc + product.quantity,
+                        0
+                      )}
                     </Badge>
                   )}
                 </Nav.Link>
               </LinkContainer>
-              {userInfo ? (
-                <NavDropdown title={userInfo.name} id="username">
+              {user ? (
+                <NavDropdown title={user.name} id="username">
                   <LinkContainer to="/profile">
                     <NavDropdown.Item>Profile</NavDropdown.Item>
                   </LinkContainer>
@@ -78,7 +83,7 @@ function Header() {
                   </Nav.Link>
                 </LinkContainer>
               )}
-              {userInfo && userInfo.role === "admin" && (
+              {user && isAdmin && (
                 <NavDropdown title="admin" id="adminMenu">
                   <LinkContainer to="/admin/productlist">
                     <NavDropdown.Item>Product</NavDropdown.Item>

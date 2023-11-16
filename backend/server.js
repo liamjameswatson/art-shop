@@ -6,6 +6,7 @@ import { dirname } from "path";
 
 dotenv.config();
 
+// import stripeModule from "stripe";
 import cookieParser from "cookie-parser";
 import connectDB from "./config/db.js";
 import cors from "cors";
@@ -13,13 +14,13 @@ import productRoutes from "./routes/productRoutes.js";
 import userRoutes from "./routes/userRoutes.js";
 import orderRoutes from "./routes/orderRoutes.js";
 import uploadRoutes from "./routes/uploadRoutes.js";
+import stripe from "./routes/stripe.js";
 
 import globalErrorHandler from "./controllers/errorController.js";
-
 import { notFound, errorHandler } from "./middleware/errorMiddleware.js";
 
 const port = process.env.PORT || 8000;
-
+ 
 connectDB(); // connect to database
 
 const app = express();
@@ -54,10 +55,48 @@ app.use("/api/products", productRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/uploads", uploadRoutes);
+app.use("/api/stripe", stripe);
 
-app.get("/api/config/paypal", (req, res) =>
-  res.send({ clientId: process.env.PAYPAL_CLIENT_ID })
-);
+// server.js
+app.get("/api/config/paypal", (req, res) => {
+  res.send({ clientId: process.env.PAYPAL_CLIENT_ID });
+});
+
+///////////////////////////////////////////////////////////////////////////
+
+// const stripe = stripeModule(process.env.STRIPE_SECRET_KEY, {
+//   apiVersion: "2022-08-01",
+// });
+
+// app.get("/api/config/stripe", (req, res) => {
+//   res.send({
+//     publishableKey: process.env.STRIPE_PUBLISHABLE_KEY,
+//   });
+// });
+
+// app.post("/api/create-payment-intent", async (req, res) => {
+//   console.log(process.env.STRIPE_PUBLISHABLE_KEY);
+//   console.log(process.env.STRIPE_SECRET_KEY);
+//   console.log("creating intent..............");
+//   try {
+//     const paymentIntent = await stripe.paymentIntents.create({
+//       currency: "gbp",
+//       amount: 1999, //place order amount here.
+//       automatic_payment_methods: {
+//         enabled: true,
+//       },
+//     });
+//     res.send({ clientSecret: paymentIntent.client_secret });
+//   } catch (e) {
+//     console.log("creating intent");
+//     return res.status(400).send({
+//       error: {
+//         message: e.message,
+//       },
+//     });
+//   }
+// });
+//////////////////////////////////////////////////////////////////////////////////
 
 const __dirname = path.resolve(); //Set __dirname to current directory
 

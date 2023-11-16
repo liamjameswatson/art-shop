@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
-import { toast } from "react-toastify";
+import { toast } from "react-hot-toast";
 import {
   Button,
   Row,
@@ -16,48 +16,57 @@ import Steps from "../ui/Steps";
 import Message from "../ui/Message";
 import Spinner from "../ui/Spinner";
 
-import { useCreateOrderMutation } from "../slices/ordersApiSlice.js";
-import { clearCartItems } from "../slices/cartSlice.js";
+// import { useCreateOrderMutation } from "../slices/ordersApiSlice.js";
+import { useCreateOrder } from "../orderhooks/useCreateOrder.js";
+import { removeAllProducts } from "../redux/basketSlice.js";
 
 const PlaceOrderPage = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
-  const cart = useSelector((state) => state.cart);
+  const basket = useSelector((state) => state.basket);
 
-  const [createOrder, { isLoading, error }] = useCreateOrderMutation();
+  console.log("cart =", basket);
+
+  // const [createOrder, { isLoading, error }] = useCreateOrderMutation();
+  const { createOrder, isCreating, error } = useCreateOrder();
 
   useEffect(() => {
     // if not addess or paymentMethod
-    if (!cart.deliveryAddress.address) {
+    if (!basket.deliveryAddress.address) {
       navigate("/checkout");
-    } else if (!cart.paymentMethod) {
+    } else if (!basket.paymentMethod) {
       navigate("/payment");
     }
-  }, [cart.paymentMethod, cart.deliveryAddress, navigate]);
+  }, [basket.paymentMethod, basket.deliveryAddress, navigate]);
 
-  const handlePlaceOrder = async () => {
+  function handlePlaceOrder() {
     try {
       // create order
-      const res = await createOrder({
-        orderItems: cart.cartItems,
-        deliveryAddress: cart.deliveryAddress,
-        paymentMethod: cart.paymentMethod,
-        itemsPrice: cart.itemsPrice,
-        deliveryPrice: cart.deliveryPrice,
-        taxPrice: cart.taxPrice,
-        totalPrice: cart.totalPrice,
-      }).unwrap();
+      createOrder(
+        {
+          orderItems: basket.products,
+          deliveryAddress: basket.deliveryAddress,
+          paymentMethod: basket.paymentMethod,
+          itemsPrice: basket.productsPrice,
+          deliveryPrice: basket.deliveryPrice,
+          taxPrice: basket.taxPrice,
+          totalPrice: basket.totalPrice,
+        },
+        {
+          onSuccess: (data) => {
+            navigate(`/order/${data.createdOrder._id}`); // success page
+          },
+        }
+      );
 
       // clear cart
-      dispatch(clearCartItems());
-
-      navigate(`/order/${res._id}`); //success page
+      // dispatch(removeAllProducts());
     } catch (error) {
-      toast.error(error.data.message);
-      console.log(error);
+      console.log({ error });
+      toast.error(error.message);
     }
-  };
+  }
 
   return (
     <>
@@ -68,25 +77,25 @@ const PlaceOrderPage = () => {
             <ListGroup.Item>
               <h2>Delivery</h2>
               <p>
-                <strong>Address:</strong> {cart.deliveryAddress.address},{" "}
-                {cart.deliveryAddress.city}, {cart.deliveryAddress.postcode},{" "}
-                {cart.deliveryAddress.country}
+                <strong>Address:</strong> {basket.deliveryAddress.address},{" "}
+                {basket.deliveryAddress.city}, {basket.deliveryAddress.postcode}
+                , {basket.deliveryAddress.country}
               </p>
             </ListGroup.Item>
             <ListGroup.Item>
               <h2>Payment Method</h2>
               <p>
-                <strong>Method:</strong> {cart.paymentMethod}
+                <strong>Method:</strong> {basket.paymentMethod}
               </p>
             </ListGroup.Item>
             <ListGroup.Item>
               <h2>Order Items</h2>
-              {cart.cartItems.length === 0 ? (
+              {basket?.products.length === 0 ? (
                 <Message>Your basket is empty</Message>
               ) : (
                 // loop through each item in the basket
                 <ListGroup variant="flush">
-                  {cart.cartItems.map((item, index) => (
+                  {basket?.products.map((item, index) => (
                     <ListGroup.Item key={index}>
                       <Row>
                         <Col sm={3}>
@@ -123,44 +132,46 @@ const PlaceOrderPage = () => {
               <ListGroupItem>
                 <Row>
                   <Col>Items:</Col>
-                  <Col>${cart.itemsPrice}</Col>
+                  <Col>{basket.productsPrice}</Col>
                 </Row>
               </ListGroupItem>
 
               <ListGroupItem>
                 <Row>
                   <Col>Delivery:</Col>
-                  <Col>${cart.deliveryPrice}</Col>
+                  <Col>£{basket.deliveryPrice}</Col>
                 </Row>
               </ListGroupItem>
 
               <ListGroupItem>
                 <Row>
                   <Col>Tax:</Col>
-                  <Col>${cart.taxPrice}</Col>
+                  <Col>£{basket.taxPrice}</Col>
                 </Row>
               </ListGroupItem>
               <ListGroupItem>
                 <Row>
                   <Col>Total:</Col>
-                  <Col>${cart.totalPrice}</Col>
+                  <Col>£{basket.totalPrice}</Col>
                 </Row>
               </ListGroupItem>
 
               <ListGroupItem>
-                {error && <Message variant="danger">{error.message}</Message>}
+                {error && (
+                  <Message variant="danger">{error.message || error}</Message>
+                )}
               </ListGroupItem>
 
               <ListGroupItem>
                 <Button
                   className="btn-block"
                   type="button"
-                  disabled={cart.cartItems.length === 0}
+                  disabled={basket.products.length === 0}
                   onClick={handlePlaceOrder}
                 >
                   Place Order
                 </Button>
-                {isLoading && <Spinner />}
+                {isCreating && <Spinner />}
               </ListGroupItem>
             </ListGroup>
           </Card>

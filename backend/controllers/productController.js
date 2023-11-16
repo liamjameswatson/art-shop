@@ -1,10 +1,21 @@
 import asyncHandler from "../middleware/asyncHandler.js";
 import Product from "../models/productModel.js";
 import { AppError } from "../utils/appError.js";
+import fs from "fs";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 // @desc Fetch all products
 // @route GET /api/products
 // @access Public
+
+const getAllProducts = asyncHandler(async (req, res) => {
+  const products = await Product.find();
+  return res.json(products);
+});
 
 const getProducts = asyncHandler(async (req, res) => {
   const pageSize = 100;
@@ -27,14 +38,18 @@ const getProducts = asyncHandler(async (req, res) => {
 // @access Public
 const getProductById = asyncHandler(async (req, res) => {
   const product = await Product.findById(req.params.id);
+  console.log(req.params.id);
 
   if (product) {
     // console.log(product);
-    return res.json(product);
+    res.status(201).json({
+      status: "success",
+      product,
+    });
   } else {
     // use errorHandler
     res.status(404);
-    throw new Error("Resource not found!");
+    throw new Error("Product not found!");
   }
 });
 
@@ -42,19 +57,29 @@ const getProductById = asyncHandler(async (req, res) => {
 // @route POST /api/products
 // @access Private/ Admin
 const createProduct = asyncHandler(async (req, res) => {
-  const product = new Product({
-    name: "Sample name",
-    description: "Sample description",
-    image: "/images/sample.jpg",
-    otherImages: ["/images/sample.jpg", "/images/sample.jpg"],
-    category: "sample category",
-    price: 0,
-    stockNumber: 0,
+  console.log("req.body form request...", req.body);
+  const newProduct = new Product({
+    name: req.body.name,
+    description: req.body.description,
+    image: req.body.image,
+    otherImages: req.body.otherImages,
+    category: req.body.category,
+    price: req.body.price,
+    stockNumber: req.body.stockNumber,
     user: req.user._id,
   });
+  console.log("new product pre saved", newProduct);
+  if (newProduct) {
+    const createdProduct = await newProduct.save();
+    console.log("new product after saved", createdProduct);
 
-  const createdProduct = await product.save();
-  res.status(201).json(createdProduct);
+    res.status(201).json({
+      status: "success",
+      createdProduct,
+    });
+  } else {
+    new AppError("Product could not be created", 500);
+  }
 });
 
 // @desc Update a product
@@ -63,6 +88,7 @@ const createProduct = asyncHandler(async (req, res) => {
 
 const updateProduct = asyncHandler(async (req, res) => {
   const updateData = req.body; // Expect an object with properties to update
+  console.log("updateData =", updateData);
 
   const product = await Product.findById(req.params.id);
 
@@ -88,15 +114,31 @@ const updateProduct = asyncHandler(async (req, res) => {
 const deleteProduct = asyncHandler(async (req, res) => {
   const product = await Product.findById(req.params.id);
   if (product) {
+    // if (product.image) {
+    //   const imagePath = path.join(__dirname, "art-shop", product.image);
+    //   console.log("image path", imagePath);
+
+    //   try {
+    //     await fs.promises.unlink(imagePath); // Use fs.promises.unlink for promises-based approach
+    //     console.log("File deleted successfully");
+    //   } catch (err) {
+    //     console.log("Error deleting", err);
+    //     res.status(500).json({ error: "Error deleting the image" });
+    //     return;
+    //   }
+    // }
     await Product.deleteOne({ _id: product._id });
+    console.log("product for delete successfully");
     res.status(200).json({ message: "Product removed successfully" });
   } else {
+    console.log("not found");
     res.status(404);
     throw new Error("Product not found");
   }
 });
 
 export {
+  getAllProducts,
   getProducts,
   getProductById,
   createProduct,

@@ -25,8 +25,6 @@ const upload = multer({
 });
 
 export const resizeOneImage = asyncHandler(async (req, res, next) => {
-  console.log("RESIZING");
-
   if (!req.file) {
     return next();
   }
@@ -46,23 +44,20 @@ export const resizeOneImage = asyncHandler(async (req, res, next) => {
 });
 
 router.post("/", upload.single("image"), resizeOneImage, (req, res) => {
-  console.log(req.file);
-  res.send({
+  res.json({
+    status: "success",
     message: "Image Uploaded Successfully",
-    image: `/${req.file.path}`,
+    path: `/${req.file.path}`,
     image: `/${req.body.image}`,
   });
 });
 
 export const resizeMultiImages = asyncHandler(async (req, res, next) => {
-  console.log("RESIZING MULTI");
-
   if (!req.files) {
     return next();
   }
 
   const otherImages = [];
-  // console.log(req.body.otherImages);
   await Promise.all(
     req.files.map(async (file, index) => {
       const imageFilename = `${
@@ -88,9 +83,8 @@ router.post(
   upload.array("otherImages", 6),
   resizeMultiImages,
   (req, res) => {
-    console.log("These are the the files", req.files);
     res.send({
-      message: "Good day?         ......Image Uploaded Successfully",
+      message: "Images Uploaded Successfully",
       images: req.body.images,
     });
   }

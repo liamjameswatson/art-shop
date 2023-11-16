@@ -1,3 +1,4 @@
+import Stripe from "stripe";
 import asyncHandler from "../middleware/asyncHandler.js";
 import Order from "../models/orderModel.js";
 
@@ -22,9 +23,9 @@ const addOrderItems = asyncHandler(async (req, res) => {
   } else {
     // create a new order with user ID
     const order = new Order({
-      orderItems: orderItems.map((x) => ({
-        ...x,
-        product: x._id,
+      orderItems: orderItems.map((item) => ({
+        ...item,
+        product: item._id,
         _id: undefined,
       })),
       user: req.user._id,
@@ -38,7 +39,12 @@ const addOrderItems = asyncHandler(async (req, res) => {
 
     const createdOrder = await order.save();
 
-    res.status(201).json(createdOrder);
+    console.log({ createdOrder });
+
+    res.status(201).json({
+      status: "success",
+      createdOrder,
+    });
   }
 });
 
@@ -60,7 +66,10 @@ const getOrderByID = asyncHandler(async (req, res) => {
   ); // seearch the database for the id in url, and add user name and email
 
   if (order) {
-    res.status(200).json(order);
+    res.status(200).json({
+      status: "success",
+      order,
+    });
   } else {
     res.status(404);
     throw new Error("Order not found");
@@ -70,7 +79,7 @@ const getOrderByID = asyncHandler(async (req, res) => {
 // @desc Update order to paid
 // @route PUT /api/oders/:id/pay
 // @access Private/Admin (Admin Only)
-const UpdateOrderToPaid = asyncHandler(async (req, res) => {
+const updateOrderToPaidPayPal = asyncHandler(async (req, res) => {
   // if order respond with paypal info and set order to paid
   const order = await Order.findById(req.params.id);
 
@@ -98,7 +107,7 @@ const UpdateOrderToPaid = asyncHandler(async (req, res) => {
 // @desc Update order to delivered
 // @route PUT /api/oders/:id/delivered
 // @access Private/Admin (Admin Only)
-const UpdateOrderToDelivered = asyncHandler(async (req, res) => {
+const updateOrderToDelivered = asyncHandler(async (req, res) => {
   const order = await Order.findById(req.params.id);
 
   if (order) {
@@ -122,11 +131,60 @@ const getOrders = asyncHandler(async (req, res) => {
   res.status(200).json(orders);
 });
 
+const updateOrderToPaidCard = asyncHandler(async (req, res) => {
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+  const createdPayment = stripe.charges.create(
+    {
+      source: req.body.tokenId,
+      amount: req.body.amount,
+      currency: "gbp",
+    },
+    (stripeError, stripeResponse) => {
+      if (stripeError) {
+        res.status(500).json(stripeError);
+      } else {
+        res.status(200).json(stripeResponse);
+      }
+    }
+  );
+  return createdPayment;
+});
+
+const payWithStripe = asyncHandler(async (req, res) => {
+  const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
+
+  const paymentIntent = await stripe.paymentIntents.create({
+    currency: "gbp",
+    amount: 1999,
+    automatic_payment_methods: {
+      enabled: true,
+    },
+  });
+  res.send({
+    clientSecret: paymentIntent.client_secret,
+    message: "hello there",
+  });
+});
+
+const editOrder = asyncHandler(async (req, res) => {
+  console.log(req.body);
+  const { orderId, paymentMethod } = req.body;
+  const order = await Order.findByIdAndUpdate(orderId, {
+    isPaid: true,
+    paymentMethod: paymentMethod,
+  });
+  console.log(order);
+});
+
 export {
   addOrderItems,
   getMyOrders,
   getOrderByID,
-  UpdateOrderToDelivered,
-  UpdateOrderToPaid,
+  updateOrderToDelivered,
+  updateOrderToPaidPayPal,
   getOrders,
+  payWithStripe,
+  updateOrderToPaidCard,
+  editOrder,
 };

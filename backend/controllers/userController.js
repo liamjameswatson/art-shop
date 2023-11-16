@@ -26,7 +26,6 @@ const loginUser = asyncHandler(async (req, res, next) => {
     return next(new AppError("Please provide a valid email and password", 401));
   } else {
     const token = generateToken(res, user._id);
-    // console.log(token);
 
     res.status(201).json({
       status: "success",
@@ -40,7 +39,7 @@ const loginUser = asyncHandler(async (req, res, next) => {
 
 // @desc Create new user
 // @route POST /api/users
-// @access Public
+// @access Public/
 
 const signUpUser = asyncHandler(async (req, res, next) => {
   const { name, email, password } = req.body;
@@ -48,7 +47,9 @@ const signUpUser = asyncHandler(async (req, res, next) => {
   // Check for existing user
   const userExists = await User.findOne({ email });
 
-  if (userExists) {
+  if (userExists && userExists.active === false) {
+    console.log("active user already");
+  } else {
     return next(new AppError("User already exists", 400));
   }
 
@@ -61,10 +62,12 @@ const signUpUser = asyncHandler(async (req, res, next) => {
 
   if (newUser) {
     // send an email
+
     // const url = "http://localhost:5173/login";
-    const url = `${req.protocol}://${req.get("host")}/login}`;
-    console.log("url =", url);
-    await new Email(newUser, url).sendWelcome();
+    // const url = `${req.protocol}://${req.get("host")}/login}`;
+
+    // await new Email(newUser, url).sendWelcome();
+
     // if user generate a token and send info back to client
     const token = generateToken(res, newUser._id);
 
@@ -85,7 +88,7 @@ const signUpUser = asyncHandler(async (req, res, next) => {
 // @access Private
 
 const logoutUser = asyncHandler(async (req, res) => {
-  // set cookie to empty string
+  console.log("logged from backend");
   res.cookie("jwt", "", {
     httpOnly: true,
     expires: new Date(0),
@@ -98,7 +101,8 @@ const logoutUser = asyncHandler(async (req, res) => {
 // @access Private
 
 const getUserProfile = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.user._id); //req.user._id comes from being logged in
+  const userId = req.body;
+  const user = await User.findById(userId);
 
   if (user) {
     res.status(200).json({
@@ -117,28 +121,42 @@ const getUserProfile = asyncHandler(async (req, res) => {
 // @access Private
 
 const updateUserProfile = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.user._id); //req.user._id comes from being logged in
-
-  if (user) {
-    // update a field or keep whatever is in the database
-    user.name = req.body.name || user.name;
-    user.email = req.body.email || user.email;
-
-    if (req.body.password) {
-      user.password = req.body.password;
-    }
+  let { name, email, password, newPassword } = req.body;
+  console.log(name);
+  console.log(newPassword);
+  const user = await User.findById(req.user._id).select("+password");
+  if (!user || !(await user.matchPassword(password, user.password))) {
+    console.log("passwords do not match");
+    return next(new AppError("Please provide a valid email and password", 401));
+  } else {
+    user.name = name;
+    user.email = email;
+    if (newPassword) user.password = newPassword;
 
     const updatedUser = await user.save();
 
-    res.status(200).json({
-      _id: updatedUser._id,
-      name: updatedUser.name,
-      email: updatedUser.email,
-    });
-  } else {
-    res.status(404);
-    throw new Error("User not found");
+    console.log("updatedUser ===", updatedUser);
+
+    //req.user._id comes from being logged in
   }
+
+  // if (user) {
+  //   // update a field or keep whatever is in the database
+  //   //   user.name = req.body.name || user.name;
+  //   //   user.email = req.body.email || user.email;
+  //   //   if (req.body.password) {
+  //   //     user.password = req.body.password;
+  //   //   }
+  //   //   const updatedUser = await user.save();
+  //   //   res.status(200).json({s
+  //   //     _id: updatedUser._id,
+  //   //     name: updatedUser.name,
+  //   //     email: updatedUser.email,
+  //   //   });
+  //   // } else {
+  //   //   res.status(404);
+  //   //   throw new Error("User not found");
+  // }
 });
 
 // @desc Get all users
@@ -161,7 +179,9 @@ const getUsers = asyncHandler(async (req, res) => {
 // @access Private / Admin
 
 const getUserById = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.params.id).select("-password");
+  console.log(req.cookie);
+  const { userId } = req.body;
+  const user = await User.findById(userId).select("-password");
 
   if (user) {
     return res.json(user);
@@ -199,18 +219,16 @@ const updateUser = asyncHandler(async (req, res) => {
 // @route Delete /api/users/:id
 // @access Private /Admin
 
-const deleteUser = asyncHandler(async (req, res) => {
-  const user = await User.findById(req.params.id);
-  if (user) {
-    if (user.role === "admin") {
-      res.status(400);
-      throw new Error("Cannot delete an admin user");
-    }
-    await User.deleteOne({ _id: user._id });
-  } else {
-    res.status(404);
-    throw new Error("User not found");
-  }
+const deleteUser = asyncHandler(async (req, res, next) => {
+  console.log(req.body);
+  const id = req.body.idToDelete;
+  const user = await User.findByIdAndUpdate(id, { active: false });
+
+  res.status(204).json({
+    status: "success",
+    data: null,
+    message: "User deleted successfully",
+  });
 });
 
 const forgotPassword = asyncHandler(async (req, res, next) => {
@@ -289,6 +307,22 @@ const resetPassword = asyncHandler(async (req, res, next) => {
   generateToken(res, user._id);
 });
 
+const getCurrentUser = asyncHandler(async (req, res, next) => {
+  res.status(200).json({
+    user: req.user,
+  });
+});
+
+const deleteCurrentUser = asyncHandler(async (req, res, next) => {
+  console.log("USER TO DELETE =====", req.user._id);
+  await User.findByIdAndUpdate(req.user._id, { active: false });
+  res.status(204).json({
+    status: "success",
+    data: null,
+    message: "User deleted successfully",
+  });
+});
+
 export {
   loginUser,
   signUpUser,
@@ -301,4 +335,6 @@ export {
   deleteUser,
   forgotPassword,
   resetPassword,
+  deleteCurrentUser,
+  getCurrentUser,
 };
