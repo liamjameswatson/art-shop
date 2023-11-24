@@ -30,7 +30,7 @@ router.post("/create-checkout-session", async (req, res) => {
     };
   });
 
-    console.log(line_items)
+   
   const session = await stripe.checkout.sessions.create({
     line_items,
     mode: "payment",
@@ -38,7 +38,7 @@ router.post("/create-checkout-session", async (req, res) => {
     cancel_url: `${process.env.CLIENT_URL}/cart`,
   });
 
-  console.log(session);
+ 
   // res.redirect(303, session.url);    // This is for submit a form
 
   res.send({ url: session.url });

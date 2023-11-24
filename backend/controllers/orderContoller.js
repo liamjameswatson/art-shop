@@ -1,6 +1,7 @@
 import Stripe from "stripe";
 import asyncHandler from "../middleware/asyncHandler.js";
 import Order from "../models/orderModel.js";
+import { updateStock } from "../utils/stock.js";
 
 // @desc Create new order
 // @route POST /api/oders
@@ -38,8 +39,6 @@ const addOrderItems = asyncHandler(async (req, res) => {
     });
 
     const createdOrder = await order.save();
-
-    console.log({ createdOrder });
 
     res.status(201).json({
       status: "success",
@@ -167,14 +166,27 @@ const payWithStripe = asyncHandler(async (req, res) => {
   });
 });
 
-const editOrder = asyncHandler(async (req, res) => {
+const updatePaymentAndStock = asyncHandler(async (req, res) => {
   console.log(req.body);
   const { orderId, paymentMethod } = req.body;
-  const order = await Order.findByIdAndUpdate(orderId, {
-    isPaid: true,
-    paymentMethod: paymentMethod,
-  });
-  console.log(order);
+  try {
+    const order = await Order.findByIdAndUpdate(
+      orderId,
+      {
+        isPaid: true,
+        paymentMethod: paymentMethod,
+      },
+      { new: true }
+
+      // Handle stock change here....
+    ).then((order) => {
+      updateStock(order);
+      res.status(200).json({ message: "succeess" });
+    });
+  } catch (error) {
+    console.error("Error updating order to paid:", error);
+    res.status(500).json({ success: false, error: "Failed to update order." });
+  }
 });
 
 export {
@@ -186,5 +198,5 @@ export {
   getOrders,
   payWithStripe,
   updateOrderToPaidCard,
-  editOrder,
+  updatePaymentAndStock,
 };

@@ -4,10 +4,10 @@ import { useCheckoutSession } from "../orderhooks/useCheckoutSession";
 
 import React from "react";
 
-const StripePayButton = ({ orderItems, user, deliveryAddress }) => {
+const StripePayButton = ({ orderItems, user, deliveryAddress, orderId }) => {
   const { isCreatingSession, createSession, error } = useCheckoutSession();
   function handleCheckout() {
-    createSession({ orderItems, user });
+    createSession({ orderItems, user, orderId });
   }
 
   return <Button onClick={() => handleCheckout()}>StripePayButton</Button>;

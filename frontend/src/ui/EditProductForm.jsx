@@ -82,6 +82,10 @@ const EditProductForm = ({ product }) => {
         ></FileInput>
       </FormRow>
 
+      <FormRow label="Is this a print?" error={errors?.isPrint?.message}>
+        <Input type="checkbox" id="isPrint" {...register("isPrint")}></Input>
+      </FormRow>
+
       <FormRow label="category" error={errors?.category?.message}>
         <Input
           type="text"

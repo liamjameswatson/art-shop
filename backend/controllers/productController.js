@@ -65,6 +65,7 @@ const createProduct = asyncHandler(async (req, res) => {
     otherImages: req.body.otherImages,
     category: req.body.category,
     price: req.body.price,
+    isPrint: req.body.isPrint || false,
     stockNumber: req.body.stockNumber,
     user: req.user._id,
   });
@@ -137,6 +138,10 @@ const deleteProduct = asyncHandler(async (req, res) => {
   }
 });
 
+const updateQuantity = asyncHandler(async (req, res) => {
+  console.log(req.body);
+});
+
 export {
   getAllProducts,
   getProducts,
@@ -144,4 +149,5 @@ export {
   createProduct,
   updateProduct,
   deleteProduct,
+  updateQuantity,
 };

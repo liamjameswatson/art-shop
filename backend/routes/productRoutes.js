@@ -6,6 +6,7 @@ import {
   createProduct,
   updateProduct,
   deleteProduct,
+  updateQuantity,
 } from "../controllers/productController.js";
 
 // import { protect, protectAdmin } from "../middleware/authMiddleware.js";
@@ -29,4 +30,7 @@ router
   // .delete(protect, protectAdmin, deleteProduct);
   .delete(protect, deleteProduct);
 
+
 export default router;
+
+

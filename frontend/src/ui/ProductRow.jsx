@@ -59,7 +59,6 @@ const Stock = styled.div`
 
 function ProductRow({ product }) {
   const [showEditForm, setShowEditForm] = useState(false);
-  console.log("Product from product row", product);
 
   const { _id: productId, name, category, price, image, stockNumber } = product;
 

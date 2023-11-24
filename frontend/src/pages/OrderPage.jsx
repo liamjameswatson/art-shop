@@ -91,7 +91,7 @@ const OrderPage = () => {
 
             <ListGroup.Item>
               <h2>Order Items</h2>
-              {orderItems.map((item, index) => (
+              {orderItems?.map((item, index) => (
                 <ListGroup.Item key={index}>
                   <Row>
                     <Col md={3} sm={3} xs={2}>

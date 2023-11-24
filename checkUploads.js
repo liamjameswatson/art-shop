@@ -17,7 +17,7 @@ fs.readdir(directoryToCheck, (err, items) => {
 
   // Loop through the list of items (files and directories) in "uploads"
   items.forEach((item) => {
-    console.log(item);
+   
   });
 });
 
