@@ -9,8 +9,7 @@ import { usePayPalClientId } from "../orderhooks/usePayPalClientId";
 import { useNavigate } from "react-router-dom";
 import { ORDERS_URL } from "../constants";
 
-
-function PayPalCheckout({ order, user }, onPayment) {
+function PayPalCheckout({ order, orderID, user }, onPayment) {
   const navigate = useNavigate();
 
   const {
@@ -45,7 +44,7 @@ function PayPalCheckout({ order, user }, onPayment) {
   }, [paypalClientError, IsLoadingClient, order, paypalClient, paypalDispatch]);
 
   function handleApprove() {
-    setIsPaid(true);
+    // setIsPaid(true);
     navigate(`/checkout-success`);
   }
 

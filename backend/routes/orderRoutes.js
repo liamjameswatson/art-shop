@@ -9,8 +9,10 @@ import {
   payWithStripe,
   updateOrderToDelivered,
   getOrders,
-  editOrder,
+  updatePaymentAndStock,
 } from "../controllers/orderContoller.js";
+
+import { checkStock } from "../utils/stock.js";
 
 import { protect, restrictTo } from "../middleware/authMiddleware.js";
 
@@ -20,7 +22,7 @@ const router = express.Router();
 router
   .route("/")
   .get(protect, restrictTo("admin"), getOrders)
-  .post(protect, addOrderItems);
+  .post(protect, checkStock, addOrderItems);
 
 // User can get their orders
 router.route("/myorders").get(protect, getMyOrders);
@@ -40,6 +42,6 @@ router.route("/:id/stripe").post(protect, payWithStripe);
 router.route("/:id/deliver").put(protect, updateOrderToDelivered);
 // router.route("/:id/deliver").put(protect, protectAdmin, UpdateOrderToDelivered);
 
-router.route("/pay").put(protect, editOrder);
+router.route("/pay").put(protect, checkStock, updatePaymentAndStock);
 
 export default router;

@@ -1,17 +1,24 @@
 // import React from "react";
 // import FormContainer from "../ui/FormContainer";
 import { Form, Button } from "react-bootstrap";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import Input from "./Input";
 import FileInput from "./FileInput";
 import { useCreateProduct } from "../productHooks/useCreateProduct.js";
+import Checkbox from "./CheckBox.jsx";
 
 import FormRow from "./FormRow";
 import { uploadImage, uploadImages } from "../utils/imageUtils";
 
 const CreateProductForm = () => {
-  const { register, handleSubmit, reset, formState } = useForm();
+  const { register, handleSubmit, reset, formState, control, watch, setValue } =
+    useForm();
   const { errors } = formState;
+  const isPrint = useWatch({
+    control,
+    name: "isPrint",
+    defaultValue: false,
+  });
 
   const { isCreating, createProduct } = useCreateProduct();
 
@@ -85,6 +92,10 @@ const CreateProductForm = () => {
         ></FileInput>
       </FormRow>
 
+      <FormRow label="Is this a print?" error={errors?.isPrint?.message}>
+        <Input type="checkbox" id="isPrint" {...register("isPrint")}></Input>
+      </FormRow>
+
       <FormRow label="category" error={errors?.category?.message}>
         <Input
           type="text"
@@ -120,6 +131,7 @@ const CreateProductForm = () => {
               message: "You must have more than one item to sell",
             },
           })}
+          value={isPrint ? "99" : ""}
         ></Input>
       </FormRow>
 

@@ -2,7 +2,7 @@ import { PRODUCTS_URL } from "../constants";
 
 export async function getProducts() {
   const response = await fetch(`${PRODUCTS_URL}`);
-  console.log(response);
+
   if (response.error) {
     throw new Error(response.error.message || response.error);
   }
@@ -57,6 +57,7 @@ export async function createProduct(data) {
 
 export async function editProduct(data) {
   const { id, ...updateData } = data;
+  console.log("data from editProduct ========", data);
   const response = await fetch(`${PRODUCTS_URL}/${id}`, {
     method: "PUT",
     headers: {

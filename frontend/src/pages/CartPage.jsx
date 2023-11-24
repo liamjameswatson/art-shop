@@ -13,6 +13,8 @@ import { FaTrash } from "react-icons/fa";
 import Message from "../ui/Message";
 import { useState } from "react";
 
+import { useProducts } from "../productHooks/useProducts";
+
 import {
   addProductToBasket,
   deleteProductFromBasket,
@@ -24,6 +26,16 @@ const CartPage = () => {
   const [quantity, setQuantity] = useState("");
 
   const { products: productsInBasket } = useSelector((state) => state.basket);
+
+  const { data } = useProducts();
+
+  const productInDB = data?.products;
+
+  if (data?.products) {
+    for (const product of productInDB) {
+      console.log("product is...", product);
+    }
+  }
   console.log({ productsInBasket });
 
   const handleAddToBasket = async (product, quantity) => {
@@ -48,7 +60,7 @@ const CartPage = () => {
           <Link className="btn btn-light my-3" to="/">
             Back
           </Link>
-          {productsInBasket.length === 0 ? (
+          {productsInBasket?.length <= 0 ? (
             <Message>
               Your basket is empty <Link to="/">Go Back</Link>
             </Message>
@@ -127,7 +139,7 @@ const CartPage = () => {
                 <Button
                   type="button"
                   className="btn-block"
-                  disabled={productsInBasket.length === 0}
+                  disabled={productsInBasket?.length <= 0}
                   onClick={handleCheckout}
                 >
                   {" "}

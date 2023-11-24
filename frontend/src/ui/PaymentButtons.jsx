@@ -3,9 +3,13 @@ import PayPalCheckout from "./PayPalCheckout";
 import StripePayButton from "./StripePayButton";
 import { useUpdateOrder } from "../orderhooks/useUpdateOrder";
 import { useNavigate } from "react-router-dom";
+import { removeAllProducts } from "../redux/basketSlice";
+import { useDispatch } from "react-redux";
 
 function PaymentButtons({ order, user, orderId }) {
   const { orderItems, deliveryAddress } = order;
+
+  const dispatch = useDispatch();
 
   const { updateOrder } = useUpdateOrder();
 
@@ -15,6 +19,9 @@ function PaymentButtons({ order, user, orderId }) {
     console.log("testing");
     const paymentMethod = "stripe";
     updateOrder({ paymentMethod, orderId });
+    removeAllProducts;
+    dispatch(removeAllProducts());
+    //SEND EMAIL FOR ORDER HERE..
     navigate("/checkout-success");
   }
   return (

@@ -36,12 +36,24 @@ const productSchema = new mongoose.Schema(
       required: true,
       default: 0,
     },
+    isPrint: {
+      type: Boolean,
+      default: false,
+    },
   },
 
   {
     timestamps: true, // add createdAt and updatedAt timestamps
   }
 );
+
+productSchema.pre("save", async function (next) {
+  if (this.isPrint) {
+    this.stockNumber = 999;
+  }
+  next();
+});
+
 const Product = mongoose.model("Product", productSchema);
 
 export default Product;
